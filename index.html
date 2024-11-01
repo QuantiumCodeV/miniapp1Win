@@ -109,7 +109,21 @@
       console.log('Имя пользователя:', user.first_name);
       console.log('Юзернейм:', user.username);
       
-      
+      function getUserBalance() {
+        $.ajax({
+          url: "/backend/get_user_balance.php", 
+          method: "POST",
+          data: {
+            user_id: user.id
+          },
+          success: function(response) {
+            let balance = JSON.parse(response).balance;
+            $("#userBalance").text(balance + "₣");
+          }
+        });
+      }
+
+      getUserBalance();
     </script>
     
     <script src="assets/js/script.js"></script>
