@@ -108,6 +108,7 @@
       console.log('ID пользователя:', user.id);
       console.log('Имя пользователя:', user.first_name);
       console.log('Юзернейм:', user.username);
+      localStorage.setItem('user_id', user.id);
       
       function getUserBalance() {
         $.ajax({

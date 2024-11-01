@@ -104,7 +104,7 @@
               $.ajax({
                 url: "/backend/activate_promo.php",
                 method: "POST",
-                data: { promo: promoCode },
+                data: { promo: promoCode, user_id: localStorage.getItem('user_id') },
                 success: function (response) {
                   console.log(response);
                   var responseJSON = JSON.parse(response);

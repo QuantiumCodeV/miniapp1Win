@@ -40,8 +40,8 @@
         <p class="friends_item">ДРУЗЬЯ <span>5</span> УРОВНЯ: <span id="friends5">5</span></p>
       </div>
       <div class="main_buttons">
-        <button class="main_button">Пригласить друзей</button>
-        <img src="./assets/img/copy.svg" alt="" class="main_copy">
+        <button class="main_button" onclick="copyLink()">Пригласить друзей</button>
+        <img src="./assets/img/copy.svg" alt="" class="main_copy" onclick="copyLink()">
       </div>
     </div>
   </div>
@@ -77,7 +77,7 @@
           url: "/backend/get_friends.php",
           method: "POST", 
           data: {
-            user_id: user.id
+            user_id: localStorage.getItem('user_id')
           },
           success: function(response) {
             let data = JSON.parse(response);
@@ -88,6 +88,12 @@
             $("#friends5").text(data.level5);
           }
         });
+      }
+
+
+      function copyLink() {
+        let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
+        navigator.clipboard.writeText(link);
       }
     </script>
     

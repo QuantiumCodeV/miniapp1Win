@@ -64,6 +64,24 @@
       console.log('ID пользователя:', user.id);
       console.log('Имя пользователя:', user.first_name);
       console.log('Юзернейм:', user.username);
+
+
+      function getActiveTasks() {
+        $.ajax({
+          url: "/backend/get_active_tasks.php",
+          method: "POST",
+          data: {
+            user_id: localStorage.getItem('user_id')
+          },
+          success: function(response) {
+            let data = JSON.parse(response);
+            if(data.success) {
+              // Обработка успешного ответа
+              console.log("Активные задания получены");
+            }
+          }
+        });
+      }
     </script>
     
     <script src="assets/js/script.js"></script>

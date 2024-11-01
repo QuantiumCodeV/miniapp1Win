@@ -38,8 +38,8 @@ ADMIN_ID = 612475751  # Замените на ваш фактический ID �
 def init_db():
     conn = mysql.connector.connect(
         host="localhost",
-        user="root", 
-        password="",
+        user="miniapp", 
+        password="72Merasardtfy_",
         database="miniapp"
     )
     cursor = conn.cursor()
@@ -517,7 +517,7 @@ async def start_command(message: Message):
     ))
     
     # Создаем реферальную ссылку
-    ref_link = f"https://t.me/your_bot_username?start={message.from_user.id}"
+    ref_link = f"https://t.me/fasdfadf_bot?start={message.from_user.id}"
     
     # Регистрируем пользователя
     register_user(message.from_user.id, message.from_user.username, referrer_id)
