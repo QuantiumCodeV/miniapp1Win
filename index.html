@@ -20,6 +20,7 @@
       type="text/javascript"
       src="//code.jquery.com/jquery-migrate-1.2.1.min.js"
     ></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <title>Miniapp</title>
   </head>
@@ -42,7 +43,7 @@
         <li class="modal_gift_video"><span>20000₣</span> если ваше видео набрало более 5 тысяч просмотров</li>
         <li class="modal_gift_video"><span>100 000₣</span> если ваше видео набрало более 20 тысяч просмотров</li>
       </ul>
-      <p class="modal_gift_video_text">Для получения вознаграждения, пришлите ссылку вашего аккаунта и скриншот где видно сколько ваше видео набрало просмотров”
+      <p class="modal_gift_video_text">Для получения вознаграждения, пришлите ссылку вашего аккаунта и скриншот где видно сколько ваше видео набрало просмотров"
       </p>
     </div>
   </div>
@@ -68,18 +69,16 @@
   </div>
 </div>
 
-
-
 <section class="main">
   <div class="container">
     <img src="./assets/img/help.svg" alt="" class="main_help" id="openhelp">
     <div class="main_center">
-      <h2 class="main_tittle">YOUR BALANCE</h2>
-      <h1 class="main_balance">1232F</h1>
-      <h3 class="main_sutittle">Invite your friends and get 1000F for each friend</h3>
+      <h2 class="main_tittle">ВАШ БАЛАНС</h2>
+      <h1 class="main_balance" id="userBalance">0₣</h1>
+      <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
       <div class="main_buttons">
-        <button class="main_button">Invite friends</button>
-        <img src="./assets/img/copy.svg" alt="" class="main_copy">
+        <button class="main_button" id="inviteBtn">Пригласить друзей</button>
+        <img src="./assets/img/copy.svg" alt="" class="main_copy" id="copyBtn">
       </div>
     </div>
   </div>
@@ -90,17 +89,46 @@
   <div class="navigations">
     <div class="navigations_content">
       <ul class="navigations_items">
-        <li class="navigations_item navigations_item_active"><a href="index.html">Home</a></li>
-        <li class="navigations_item"><a href="tasks.html">Tasks</a></li>
-        <li class="navigations_item"><a href="friends.html">Friends</a></li>
-        <li class="navigations_item"><a href="wallet.html">Wallet</a></li>
+        <li class="navigations_item navigations_item_active"><a href="index.html">Главная</a></li>
+        <li class="navigations_item"><a href="tasks.html">Задания</a></li>
+        <li class="navigations_item"><a href="friends.html">Друзья</a></li>
+        <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
       </ul>
     </div>
   </div>
 </section>
 
-  
+    <script>
+      // Инициализация Telegram WebApp
+      let tg = window.Telegram.WebApp;
+      tg.expand();
+      
+      // Получаем данные пользователя из Telegram
+      let user = tg.initDataUnsafe.user;
+      console.log('ID пользователя:', user.id);
+      console.log('Имя пользователя:', user.first_name);
+      console.log('Юзернейм:', user.username);
+      
+      // Загружаем баланс пользователя
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const response = await fetch(`/api/user/balance?userId=${user.id}`);
+          const userData = await response.json();
+          document.getElementById('userBalance').textContent = `${userData.balance}₣`;
+        } catch (err) {
+          console.error('Ошибка при загрузке данных:', err);
+        }
+      });
 
+      // Обработчик кнопки приглашения
+      document.getElementById('inviteBtn').addEventListener('click', () => {
+        tg.showPopup({
+          title: 'Пригласить друзей', 
+          message: `Ваш ID для приглашений: ${user.id}\nПоделитесь этим ID с друзьями`,
+          buttons: [{type: 'default', text: 'Закрыть'}]
+        });
+      });
+    </script>
     
     <script src="assets/js/script.js"></script>
   </body>

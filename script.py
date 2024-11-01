@@ -258,7 +258,7 @@ async def start_command(message: Message):
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(
         text="Открыть приложение",
-        web_app=WebAppInfo(url="https://quantiumcode.online")
+        web_app=WebAppInfo(url="https://miniapp.quantiumcode.online")
     ))
     
     # Создаем реферальную ссылку
