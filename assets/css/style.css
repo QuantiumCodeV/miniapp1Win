@@ -681,6 +681,16 @@ body {
   border: 2px solid #00a6d3;
 }
 
+.tasks_promocode_button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #00a6d3;
+  border: none;
+  outline: none;
+}
+
 .tasks_promocode_input::placeholder {
   color: #fff;
 }

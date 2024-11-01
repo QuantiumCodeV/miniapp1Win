@@ -19,8 +19,11 @@ class BroadcastStates(StatesGroup):
     adding_button = State()
     confirming = State()
 
-
-
+class PromoStates(StatesGroup):
+    entering_code = State()
+    entering_amount = State()
+    entering_uses = State()
+    confirming = State()
 
 # Инициализация бота и диспетчера
 bot = Bot(token="7666407425:AAF623qqMheTU-SD_zTbFqmy8w2i_WHGAFw")
@@ -43,8 +46,248 @@ def init_db():
                   referrer_id INTEGER,
                   tasks_completed TEXT,
                   join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+                  
+    c.execute('''CREATE TABLE IF NOT EXISTS promo_codes
+                 (code TEXT PRIMARY KEY,
+                  amount INTEGER,
+                  max_uses INTEGER,
+                  current_uses INTEGER DEFAULT 0,
+                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+                  
+    c.execute('''CREATE TABLE IF NOT EXISTS promo_uses
+                 (user_id INTEGER,
+                  code TEXT,
+                  used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  FOREIGN KEY(user_id) REFERENCES users(user_id),
+                  FOREIGN KEY(code) REFERENCES promo_codes(code),
+                  PRIMARY KEY(user_id, code))''')
     conn.commit()
     conn.close()
+
+# Обработчик списка промокодов
+@router.message(Command("promos"))
+async def list_promos(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+        
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    c.execute('SELECT code FROM promo_codes')
+    promos = c.fetchall()
+    conn.close()
+    
+    kb = InlineKeyboardBuilder()
+    for promo in promos:
+        kb.add(InlineKeyboardButton(
+            text=promo[0],
+            callback_data=f"promo_info_{promo[0]}"
+        ))
+    kb.adjust(1)
+    
+    await message.answer("Промокоды:", reply_markup=kb.as_markup())
+
+@router.callback_query(lambda c: c.data.startswith("promo_info_"))
+async def show_promo_info(callback: CallbackQuery):
+    code = callback.data.split("_")[2]
+    
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    c.execute('''SELECT code, amount, max_uses, current_uses, created_at 
+                 FROM promo_codes WHERE code = ?''', (code,))
+    promo = c.fetchone()
+    conn.close()
+    
+    if not promo:
+        await callback.answer("Промокод не найден")
+        return
+        
+    kb = InlineKeyboardBuilder()
+    kb.add(InlineKeyboardButton(
+        text="🗑 Удалить",
+        callback_data=f"delete_promo_{code}"
+    ))
+    kb.add(InlineKeyboardButton(
+        text="◀️ Назад",
+        callback_data="back_to_promos"
+    ))
+    kb.adjust(1)
+    
+    info_text = f"""
+Информация о промокоде:
+Код: {promo[0]}
+Сумма: {promo[1]}₣
+Макс. использований: {promo[2]}
+Использовано: {promo[3]}
+Создан: {promo[4]}
+"""
+    
+    await callback.message.edit_text(
+        info_text,
+        reply_markup=kb.as_markup()
+    )
+@router.callback_query(lambda c: c.data.startswith("delete_promo_"))
+async def delete_promo(callback: CallbackQuery):
+    if callback.from_user.id != ADMIN_ID:
+        await callback.answer("У вас нет прав для удаления промокодов")
+        return
+        
+    code = callback.data.split("_")[2]
+    
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    
+    # Проверяем существование промокода
+    c.execute('SELECT code FROM promo_codes WHERE code = ?', (code,))
+    if not c.fetchone():
+        await callback.answer("Промокод не найден")
+        conn.close()
+        return
+        
+    # Удаляем промокод
+    c.execute('DELETE FROM promo_codes WHERE code = ?', (code,))
+    conn.commit()
+    conn.close()
+    
+    await callback.answer("✅ Промокод успешно удален")
+    
+    # Получаем обновленный список промокодов
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    c.execute('SELECT code FROM promo_codes')
+    promos = c.fetchall()
+    conn.close()
+    
+    kb = InlineKeyboardBuilder()
+    for promo in promos:
+        kb.add(InlineKeyboardButton(
+            text=promo[0],
+            callback_data=f"promo_info_{promo[0]}"
+        ))
+    kb.adjust(1)
+    
+    await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
+@router.callback_query(lambda c: c.data == "back_to_promos")
+async def back_to_promos(callback: CallbackQuery):
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    c.execute('SELECT code FROM promo_codes')
+    promos = c.fetchall()
+    conn.close()
+    
+    kb = InlineKeyboardBuilder()
+    for promo in promos:
+        kb.add(InlineKeyboardButton(
+            text=promo[0],
+            callback_data=f"promo_info_{promo[0]}"
+        ))
+    kb.adjust(1)
+    
+    await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
+
+# Обработчик создания промокода
+@router.message(Command("createpromo"))
+async def create_promo(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+        
+    await message.answer("Введите код промокода:")
+    await state.set_state(PromoStates.entering_code)
+
+@router.message(PromoStates.entering_code)
+async def process_promo_code(message: Message, state: FSMContext):
+    await state.update_data(code=message.text)
+    await message.answer("Введите сумму начисления:")
+    await state.set_state(PromoStates.entering_amount)
+
+@router.message(PromoStates.entering_amount)
+async def process_promo_amount(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Пожалуйста, введите число")
+        return
+        
+    await state.update_data(amount=int(message.text))
+    await message.answer("Введите максимальное количество использований:")
+    await state.set_state(PromoStates.entering_uses)
+
+@router.message(PromoStates.entering_uses)
+async def process_promo_uses(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Пожалуйста, введите число")
+        return
+        
+    data = await state.get_data()
+    code = data['code']
+    amount = data['amount']
+    max_uses = int(message.text)
+    
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    try:
+        c.execute('INSERT INTO promo_codes (code, amount, max_uses) VALUES (?, ?, ?)',
+                 (code, amount, max_uses))
+        conn.commit()
+        await message.answer(f"""
+Промокод создан:
+Код: {code}
+Сумма: {amount}₣
+Макс. использований: {max_uses}
+""")
+    except sqlite3.IntegrityError:
+        await message.answer("Такой промокод уже существует!")
+    finally:
+        conn.close()
+        await state.clear()
+
+# Обработчик активации промокода
+@router.message(Command("promo"))
+async def activate_promo(message: Message):
+    if len(message.text.split()) != 2:
+        await message.answer("Использование: /promo КОД")
+        return
+        
+    code = message.text.split()[1]
+    user_id = message.from_user.id
+    
+    conn = sqlite3.connect('bot_database.db')
+    c = conn.cursor()
+    
+    # Проверяем существование промокода
+    c.execute('SELECT amount, max_uses, current_uses FROM promo_codes WHERE code = ?', (code,))
+    promo = c.fetchone()
+    
+    if not promo:
+        await message.answer("❌ Промокод не найден")
+        conn.close()
+        return
+        
+    amount, max_uses, current_uses = promo
+    
+    # Проверяем, не использовал ли пользователь этот промокод
+    c.execute('SELECT 1 FROM promo_uses WHERE user_id = ? AND code = ?', (user_id, code))
+    if c.fetchone():
+        await message.answer("❌ Вы уже использовали этот промокод")
+        conn.close()
+        return
+        
+    # Проверяем количество использований
+    if current_uses >= max_uses:
+        await message.answer("❌ Промокод больше не действителен")
+        conn.close()
+        return
+        
+    try:
+        # Начисляем баланс и обновляем статистику
+        c.execute('UPDATE users SET balance = balance + ? WHERE user_id = ?', (amount, user_id))
+        c.execute('UPDATE promo_codes SET current_uses = current_uses + 1 WHERE code = ?', (code,))
+        c.execute('INSERT INTO promo_uses (user_id, code) VALUES (?, ?)', (user_id, code))
+        conn.commit()
+        
+        await message.answer(f"✅ Промокод активирован! Начислено {amount}₣")
+    except Exception as e:
+        print(f"Ошибка при активации промокода: {e}")
+        await message.answer("❌ Произошла ошибка при активации промокода")
+    finally:
+        conn.close()
 
 # Обработчик команды рассылки
 @router.message(Command("broadcast"))
