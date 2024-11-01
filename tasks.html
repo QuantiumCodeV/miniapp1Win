@@ -10,9 +10,12 @@
 
     <link rel="stylesheet" href="assets/css/style.css" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"
+      rel="stylesheet"
+    />
 
     <script src="assets/js/jquery-3.6.3.js"></script>
     <script src="assets/js/jquery-ui.min.js"></script>
@@ -25,78 +28,132 @@
     <title>Miniapp</title>
   </head>
   <body>
+    <section class="main">
+      <div class="container">
+        <img src="./assets/img/tasks_image.svg" alt="" class="tasks_image" />
+        <h1 class="tasks_tittle">ВЫПОЛНЕНИЕ ЗАДАНИЙ</h1>
+        <div class="tasks_items">
+          <div class="tasks_item">
+            <div class="tasks_item_content">
+              <p class="tasks_item_tittle">Подписаться на первый канал</p>
+              <img
+                src="./assets/img/tasks_accept.svg"
+                alt=""
+                class="tasks_item_accept"
+              />
+            </div>
+          </div>
+          <div class="tasks_item">
+            <div class="tasks_item_content">
+              <p class="tasks_item_tittle">Подписаться на второй канал</p>
+              <img
+                src="./assets/img/tasks_accept.svg"
+                alt=""
+                class="tasks_item_accept"
+              />
+            </div>
+          </div>
+          <div class="tasks_item">
+            <div class="tasks_item_content">
+              <p class="tasks_item_tittle">Регистрация на сайте</p>
+              <p class="tasks_item_price">1000₣</p>
+            </div>
+          </div>
+          <div class="tasks_item">
+            <div class="tasks_item_content">
+              <p class="tasks_item_tittle">Сделать депозит</p>
+              <p class="tasks_item_price">3000₣</p>
+            </div>
+          </div>
+          <div class="tasks_item">
+            <div class="tasks_item_content">
+              <p class="tasks_item_tittle">Пригласить друга</p>
+              <p class="tasks_item_price">1000₣</p>
+            </div>
+          </div>
+        </div>
+        <div class="tasks_promocode">
+          <p class="tasks_promocode_tittle">Promocode</p>
+          <input
+            type="text"
+            placeholder="Enter poromocode"
+            class="tasks_promocode_input"
+          />
+          <button class="tasks_promocode_button" onclick="activatePromo()">
+            Применить
+          </button>
+          <p class="tasks_promocode_error" style="display: none"></p>
+          <p class="tasks_promocode_success" style="display: none"></p>
+          <script>
+            async function activatePromo() {
+              let promoCode = document.querySelector(
+                ".tasks_promocode_input"
+              ).value;
 
+              if (promoCode == "") {
+                $(".tasks_promocode_error").text("Введите промокод").show();
+                $(".tasks_promocode_success").hide();
+                setTimeout(() => {
+                  $(".tasks_promocode_error").hide();
+                }, 3000);
+                return;
+              }
 
-<section class="main">
-  <div class="container">
-    <img src="./assets/img/tasks_image.svg" alt="" class="tasks_image">
-    <h1 class="tasks_tittle">ВЫПОЛНЕНИЕ ЗАДАНИЙ</h1>
-    <div class="tasks_items">
-      <div class="tasks_item">
-        <div class="tasks_item_content">
-          <p class="tasks_item_tittle">Подписаться на первый канал</p>
-          <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept">
+              $.ajax({
+                url: "/backend/activate_promo.php",
+                method: "POST",
+                data: { promo: promoCode },
+                success: function (response) {
+                  console.log(response);
+                  var responseJSON = JSON.parse(response);
+                  if (responseJSON.error) {
+                    $(".tasks_promocode_error").text(responseJSON.error).show();
+                    $(".tasks_promocode_success").hide();
+                    setTimeout(() => {
+                      $(".tasks_promocode_error").hide();
+                    }, 3000);
+                  } else {
+                    $(".tasks_promocode_success").text(responseJSON.success).show();
+                    $(".tasks_promocode_error").hide();
+                    setTimeout(() => {
+                      $(".tasks_promocode_success").hide();
+                    }, 3000);
+                  }
+                },
+              });
+            }
+          </script>
         </div>
       </div>
-      <div class="tasks_item">
-        <div class="tasks_item_content">
-          <p class="tasks_item_tittle">Подписаться на второй канал</p>
-          <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept">
-        </div>
-      </div>
-      <div class="tasks_item">
-        <div class="tasks_item_content">
-            <p class="tasks_item_tittle">Регистрация на сайте</p>
-            <p class="tasks_item_price">1000₣</p>
-        </div>
-      </div>
-      <div class="tasks_item">
-        <div class="tasks_item_content">
-            <p class="tasks_item_tittle">Сделать депозит</p>
-            <p class="tasks_item_price">3000₣</p>
-        </div>
-      </div>
-      <div class="tasks_item">
-        <div class="tasks_item_content">
-          <p class="tasks_item_tittle">Пригласить друга</p>
-          <p class="tasks_item_price">1000₣</p>
-        </div>
-      </div>
-    </div>
-    <div class="tasks_promocode">
-      <p class="tasks_promocode_tittle">Promocode</p>
-      <input type="text" placeholder="Enter poromocode" class="tasks_promocode_input">
-      <button class="tasks_promocode_button" onclick="window.location.href='wallet.html'">Применить</button>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="navs">
-  <div class="navigations">
-    <div class="navigations_content">
-      <ul class="navigations_items">
-        <li class="navigations_item"><a href="index.html">Главная</a></li>
-        <li class="navigations_item navigations_item_active"><a href="tasks.html">Задания</a></li>
-        <li class="navigations_item"><a href="friends.html">Друзья</a></li>
-        <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
-      </ul>
-    </div>
-  </div>
-</section>
+    <section class="navs">
+      <div class="navigations">
+        <div class="navigations_content">
+          <ul class="navigations_items">
+            <li class="navigations_item"><a href="index.html">Главная</a></li>
+            <li class="navigations_item navigations_item_active">
+              <a href="tasks.html">Задания</a>
+            </li>
+            <li class="navigations_item"><a href="friends.html">Друзья</a></li>
+            <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-  
     <script>
       // Инициализация Telegram WebApp
       let tg = window.Telegram.WebApp;
       tg.expand();
-      
+
       // Получаем данные пользователя из Telegram
       let user = tg.initDataUnsafe.user;
-      console.log('ID пользователя:', user.id);
-      console.log('Имя пользователя:', user.first_name);
-      console.log('Юзернейм:', user.username);
+      console.log("ID пользователя:", user.id);
+      console.log("Имя пользователя:", user.first_name);
+      console.log("Юзернейм:", user.username);
     </script>
-    
+
     <script src="assets/js/script.js"></script>
   </body>
 </html>

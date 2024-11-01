@@ -10,6 +10,7 @@ from typing import Dict, List, Union
 from datetime import datetime
 import sqlite3
 import json
+import mysql.connector
 
 # Состояния для FSM
 class BroadcastStates(StatesGroup):
@@ -35,33 +36,40 @@ ADMIN_ID = 612475751  # Замените на ваш фактический ID �
 
 # Создание базы данных
 def init_db():
-    conn = sqlite3.connect('bot_database.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users
-                 (user_id INTEGER PRIMARY KEY,
-                  username TEXT,
-                  level INTEGER DEFAULT 1,
-                  balance INTEGER DEFAULT 0,
-                  invited_users INTEGER DEFAULT 0,
-                  referrer_id INTEGER,
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root", 
+        password="",
+        database="miniapp"
+    )
+    cursor = conn.cursor()
+    
+    cursor.execute('''CREATE TABLE IF NOT EXISTS users
+                 (user_id BIGINT PRIMARY KEY,
+                  username VARCHAR(255),
+                  level INT DEFAULT 1,
+                  balance INT DEFAULT 0,
+                  invited_users INT DEFAULT 0,
+                  referrer_id BIGINT,
                   tasks_completed TEXT,
                   join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
                   
-    c.execute('''CREATE TABLE IF NOT EXISTS promo_codes
-                 (code TEXT PRIMARY KEY,
-                  amount INTEGER,
-                  max_uses INTEGER,
-                  current_uses INTEGER DEFAULT 0,
+    cursor.execute('''CREATE TABLE IF NOT EXISTS promo_codes
+                 (code VARCHAR(255) PRIMARY KEY,
+                  amount INT,
+                  max_uses INT,
+                  current_uses INT DEFAULT 0,
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
                   
-    c.execute('''CREATE TABLE IF NOT EXISTS promo_uses
-                 (user_id INTEGER,
-                  code TEXT,
+    cursor.execute('''CREATE TABLE IF NOT EXISTS promo_uses
+                 (user_id BIGINT,
+                  code VARCHAR(255),
                   used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                   FOREIGN KEY(user_id) REFERENCES users(user_id),
                   FOREIGN KEY(code) REFERENCES promo_codes(code),
                   PRIMARY KEY(user_id, code))''')
     conn.commit()
+    cursor.close()
     conn.close()
 
 # Обработчик списка промокодов
@@ -520,9 +528,9 @@ async def start_command(message: Message):
     • 1000₣ за каждого приглашенного
     
     📊 Ваша статистика:
-    Уровень: {{{user_data['level']}}}
-    Баланс: {{{user_data['balance']}}}₣
-    Приглашено друзей: {{{user_data['invited_users']}}}
+    Уровень: {{user_data['level']}}
+    Баланс: {{user_data['balance']}}₣
+    Приглашено друзей: {{user_data['invited_users']}}
     
     🔗 Ваша реферальная ссылка:
     `{ref_link}`
