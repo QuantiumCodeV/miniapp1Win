@@ -709,7 +709,7 @@ body {
 
 @media (max-height: 750px) {
   .navigations {
-    position: relative;
+    position: fixed;
     z-index: 2;
     margin-top: 30px;
   }
