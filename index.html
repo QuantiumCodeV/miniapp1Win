@@ -109,25 +109,7 @@
       console.log('Имя пользователя:', user.first_name);
       console.log('Юзернейм:', user.username);
       
-      // Загружаем баланс пользователя
-      document.addEventListener('DOMContentLoaded', async () => {
-        try {
-          const response = await fetch(`/api/user/balance?userId=${user.id}`);
-          const userData = await response.json();
-          document.getElementById('userBalance').textContent = `${userData.balance}₣`;
-        } catch (err) {
-          console.error('Ошибка при загрузке данных:', err);
-        }
-      });
-
-      // Обработчик кнопки приглашения
-      document.getElementById('inviteBtn').addEventListener('click', () => {
-        tg.showPopup({
-          title: 'Пригласить друзей', 
-          message: `Ваш ID для приглашений: ${user.id}\nПоделитесь этим ID с друзьями`,
-          buttons: [{type: 'default', text: 'Закрыть'}]
-        });
-      });
+      
     </script>
     
     <script src="assets/js/script.js"></script>
