@@ -176,7 +176,6 @@ body {
 }
 
 .navs {
-  position: relative;
 }
 .navs_image {
   position: absolute;
@@ -647,6 +646,7 @@ body {
 }
 .tasks_promocode {
   margin-top: 20px;
+  margin-bottom: 100px;
 }
 .tasks_promocode_tittle {
   color: #fff;
