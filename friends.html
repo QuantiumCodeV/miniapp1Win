@@ -71,6 +71,24 @@
       console.log('ID пользователя:', user.id);
       console.log('Имя пользователя:', user.first_name);
       console.log('Юзернейм:', user.username);
+
+      function getFriends() {
+        $.ajax({
+          url: "/backend/get_friends.php",
+          method: "POST", 
+          data: {
+            user_id: user.id
+          },
+          success: function(response) {
+            let data = JSON.parse(response);
+            $("#friendsTotal").text(data.total + " ДРУЗЕЙ");
+            $("#friends2").text(data.level2);
+            $("#friends3").text(data.level3); 
+            $("#friends4").text(data.level4);
+            $("#friends5").text(data.level5);
+          }
+        });
+      }
     </script>
     
     <script src="assets/js/script.js"></script>
