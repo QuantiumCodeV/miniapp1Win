@@ -79,11 +79,13 @@
             placeholder="Enter poromocode"
             class="tasks_promocode_input"
           />
+          <p class="tasks_promocode_error" style="display: none"></p>
+          <p class="tasks_promocode_success" style="display: none"></p>
+          
           <button class="tasks_promocode_button" onclick="activatePromo()">
             Применить
           </button>
-          <p class="tasks_promocode_error" style="display: none"></p>
-          <p class="tasks_promocode_success" style="display: none"></p>
+          
           <script>
             async function activatePromo() {
               let promoCode = document.querySelector(

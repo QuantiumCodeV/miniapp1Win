@@ -696,6 +696,13 @@ body {
   outline: none;
 }
 
+.tasks_promocode_error {
+  color: red;
+}
+.tasks_promocode_success {
+  color: green;
+}
+
 .tasks_promocode_input::placeholder {
   color: #fff;
 }

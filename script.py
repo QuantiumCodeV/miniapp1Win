@@ -72,6 +72,10 @@ def init_db():
     cursor.close()
     conn.close()
 
+
+
+
+
 # Обработчик списка промокодов
 @router.message(Command("promos"))
 async def list_promos(message: Message):
