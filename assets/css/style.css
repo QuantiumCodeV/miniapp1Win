@@ -677,7 +677,6 @@ body {
   padding: 20px;
   border-radius: 16px;
   background: transparent;
-  margin-bottom: 15px;
   border: 2px solid #00a6d3;
 }
 
@@ -685,6 +684,12 @@ body {
   width: 100%;
   margin-top: 15px;
   padding: 20px;
+  color: #fff;
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
   border-radius: 16px;
   background: #00a6d3;
   border: none;
