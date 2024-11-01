@@ -20,6 +20,7 @@
       type="text/javascript"
       src="//code.jquery.com/jquery-migrate-1.2.1.min.js"
     ></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <title>Miniapp</title>
   </head>
@@ -30,10 +31,10 @@
   <div class="container">
     <div class="wallet_main">
       <img src="./assets/img/withdraw_image.svg" alt="" class="wallet_image">
-      <h1 class="wallet_tittle">WITHDRAWAL OF FUNDS</h1>
-      <p class="wallet_info">To withdraw, you need to complete <span>2 tasks</span> with a subscription</p>
+      <h1 class="wallet_tittle">ВЫВОД СРЕДСТВ</h1>
+      <p class="wallet_info">Для вывода необходимо выполнить <span>2 задания</span> с подпиской</p>
       <div class="main_buttons">
-        <button class="main_button">Proceed to execution</button>
+        <button class="main_button">Перейти к выполнению</button>
       </div>
     </div>
   </div>
@@ -43,17 +44,27 @@
   <div class="navigations">
     <div class="navigations_content">
       <ul class="navigations_items">
-        <li class="navigations_item"><a href="index.html">Home</a></li>
-        <li class="navigations_item"><a href="tasks.html">Tasks</a></li>
-        <li class="navigations_item"><a href="friends.html">Friends</a></li>
-        <li class="navigations_item navigations_item_active"><a href="wallet.html">Wallet</a></li>
+        <li class="navigations_item"><a href="index.html">Главная</a></li>
+        <li class="navigations_item"><a href="tasks.html">Задания</a></li>
+        <li class="navigations_item"><a href="friends.html">Друзья</a></li>
+        <li class="navigations_item navigations_item_active"><a href="wallet.html">Кошелек</a></li>
       </ul>
     </div>
   </div>
 </section>
 
   
-
+    <script>
+      // Инициализация Telegram WebApp
+      let tg = window.Telegram.WebApp;
+      tg.expand();
+      
+      // Получаем данные пользователя из Telegram
+      let user = tg.initDataUnsafe.user;
+      console.log('ID пользователя:', user.id);
+      console.log('Имя пользователя:', user.first_name);
+      console.log('Юзернейм:', user.username);
+    </script>
     
     <script src="assets/js/script.js"></script>
   </body>

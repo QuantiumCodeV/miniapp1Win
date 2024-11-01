@@ -20,6 +20,7 @@
       type="text/javascript"
       src="//code.jquery.com/jquery-migrate-1.2.1.min.js"
     ></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <title>Miniapp</title>
   </head>
@@ -30,16 +31,16 @@
   <div class="container">
     <div class="friends_main">
       <img src="./assets/img/friends_image.svg" alt="" class="friends_image">
-      <h1 class="friends_tittle">INVITE YOUR FRIENDS</h1>
-      <p class="friends_info">YOU HAVE INVITED A TOTAL OF: <br> <span>5 FRIENDS</span></p>
+      <h1 class="friends_tittle">ПРИГЛАСИТЕ ДРУЗЕЙ</h1>
+      <p class="friends_info">ВСЕГО ВЫ ПРИГЛАСИЛИ: <br> <span>5 ДРУЗЕЙ</span></p>
       <div class="friends_items">
-        <p class="friends_item">LEVEL <span>2</span> FRIENDS: <span>10</span></p>
-        <p class="friends_item">LEVEL <span>3</span> FRIENDS: <span>15</span></p>
-        <p class="friends_item">LEVEL <span>4</span> FRIENDS: <span>20</span></p>
-        <p class="friends_item">LEVEL <span>5</span> FRIENDS: <span>25</span></p>
+        <p class="friends_item">УРОВЕНЬ <span>2</span> ДРУЗЕЙ: <span>10</span></p>
+        <p class="friends_item">УРОВЕНЬ <span>3</span> ДРУЗЕЙ: <span>15</span></p>
+        <p class="friends_item">УРОВЕНЬ <span>4</span> ДРУЗЕЙ: <span>20</span></p>
+        <p class="friends_item">УРОВЕНЬ <span>5</span> ДРУЗЕЙ: <span>25</span></p>
       </div>
       <div class="main_buttons">
-        <button class="main_button">Invite friends</button>
+        <button class="main_button">Пригласить друзей</button>
         <img src="./assets/img/copy.svg" alt="" class="main_copy">
       </div>
     </div>
@@ -50,17 +51,27 @@
   <div class="navigations">
     <div class="navigations_content">
       <ul class="navigations_items">
-        <li class="navigations_item"><a href="index.html">Home</a></li>
-        <li class="navigations_item"><a href="tasks.html">Tasks</a></li>
-        <li class="navigations_item navigations_item_active"><a href="friends.html">Friends</a></li>
-        <li class="navigations_item"><a href="wallet.html">Wallet</a></li>
+        <li class="navigations_item"><a href="index.html">Главная</a></li>
+        <li class="navigations_item"><a href="tasks.html">Задания</a></li>
+        <li class="navigations_item navigations_item_active"><a href="friends.html">Друзья</a></li>
+        <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
       </ul>
     </div>
   </div>
 </section>
 
   
-
+    <script>
+      // Инициализация Telegram WebApp
+      let tg = window.Telegram.WebApp;
+      tg.expand();
+      
+      // Получаем данные пользователя из Telegram
+      let user = tg.initDataUnsafe.user;
+      console.log('ID пользователя:', user.id);
+      console.log('Имя пользователя:', user.first_name);
+      console.log('Юзернейм:', user.username);
+    </script>
     
     <script src="assets/js/script.js"></script>
   </body>

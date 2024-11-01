@@ -20,6 +20,7 @@
       type="text/javascript"
       src="//code.jquery.com/jquery-migrate-1.2.1.min.js"
     ></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <title>Miniapp</title>
   </head>
@@ -29,36 +30,36 @@
 <section class="main">
   <div class="container">
     <img src="./assets/img/tasks_image.svg" alt="" class="tasks_image">
-    <h1 class="tasks_tittle">COMPLETING TASKS</h1>
+    <h1 class="tasks_tittle">ВЫПОЛНЕНИЕ ЗАДАНИЙ</h1>
     <div class="tasks_items">
       <div class="tasks_item">
         <div class="tasks_item_content">
-          <p class="tasks_item_tittle">Subscribe to the Telegram channel</p>
+          <p class="tasks_item_tittle">Подписаться на Telegram канал</p>
           <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept">
         </div>
       </div>
       <div class="tasks_item">
         <div class="tasks_item_content">
-          <p class="tasks_item_tittle">Invite 1 friend</p>
+          <p class="tasks_item_tittle">Пригласить 1 друга</p>
           <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept">
         </div>
       </div>
       <div class="tasks_item">
         <div class="tasks_item_content">
-            <p class="tasks_item_tittle">Subscribe to a YouTube channel</p>
-            <p class="tasks_item_price">1000F</p>
+            <p class="tasks_item_tittle">Подписаться на YouTube канал</p>
+            <p class="tasks_item_price">1000₣</p>
         </div>
       </div>
       <div class="tasks_item">
         <div class="tasks_item_content">
-            <p class="tasks_item_tittle">Invite 5 friends</p>
-            <p class="tasks_item_price">3000F</p>
+            <p class="tasks_item_tittle">Пригласить 5 друзей</p>
+            <p class="tasks_item_price">3000₣</p>
         </div>
       </div>
       <div class="tasks_item">
         <div class="tasks_item_content">
-          <p class="tasks_item_tittle">Subscribe on Twitter</p>
-          <p class="tasks_item_price">1000F</p>
+          <p class="tasks_item_tittle">Подписаться в Twitter</p>
+          <p class="tasks_item_price">1000₣</p>
         </div>
       </div>
     </div>
@@ -69,17 +70,27 @@
   <div class="navigations">
     <div class="navigations_content">
       <ul class="navigations_items">
-        <li class="navigations_item"><a href="index.html">Home</a></li>
-        <li class="navigations_item navigations_item_active"><a href="tasks.html">Tasks</a></li>
-        <li class="navigations_item"><a href="friends.html">Friends</a></li>
-        <li class="navigations_item"><a href="wallet.html">Wallet</a></li>
+        <li class="navigations_item"><a href="index.html">Главная</a></li>
+        <li class="navigations_item navigations_item_active"><a href="tasks.html">Задания</a></li>
+        <li class="navigations_item"><a href="friends.html">Друзья</a></li>
+        <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
       </ul>
     </div>
   </div>
 </section>
 
   
-
+    <script>
+      // Инициализация Telegram WebApp
+      let tg = window.Telegram.WebApp;
+      tg.expand();
+      
+      // Получаем данные пользователя из Telegram
+      let user = tg.initDataUnsafe.user;
+      console.log('ID пользователя:', user.id);
+      console.log('Имя пользователя:', user.first_name);
+      console.log('Юзернейм:', user.username);
+    </script>
     
     <script src="assets/js/script.js"></script>
   </body>
