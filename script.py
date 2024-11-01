@@ -8,9 +8,8 @@ from aiogram.fsm.context import FSMContext
 import asyncio
 from typing import Dict, List, Union
 from datetime import datetime
-import sqlite3
-import json
 import mysql.connector
+import json
 
 # Состояния для FSM
 class BroadcastStates(StatesGroup):
@@ -82,7 +81,12 @@ async def list_promos(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
         
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     c.execute('SELECT code FROM promo_codes')
     promos = c.fetchall()
@@ -102,10 +106,15 @@ async def list_promos(message: Message):
 async def show_promo_info(callback: CallbackQuery):
     code = callback.data.split("_")[2]
     
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     c.execute('''SELECT code, amount, max_uses, current_uses, created_at 
-                 FROM promo_codes WHERE code = ?''', (code,))
+                 FROM promo_codes WHERE code = %s''', (code,))
     promo = c.fetchone()
     conn.close()
     
@@ -145,25 +154,35 @@ async def delete_promo(callback: CallbackQuery):
         
     code = callback.data.split("_")[2]
     
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     
     # Проверяем существование промокода
-    c.execute('SELECT code FROM promo_codes WHERE code = ?', (code,))
+    c.execute('SELECT code FROM promo_codes WHERE code = %s', (code,))
     if not c.fetchone():
         await callback.answer("Промокод не найден")
         conn.close()
         return
         
     # Удаляем промокод
-    c.execute('DELETE FROM promo_codes WHERE code = ?', (code,))
+    c.execute('DELETE FROM promo_codes WHERE code = %s', (code,))
     conn.commit()
     conn.close()
     
     await callback.answer("✅ Промокод успешно удален")
     
     # Получаем обновленный список промокодов
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     c.execute('SELECT code FROM promo_codes')
     promos = c.fetchall()
@@ -180,7 +199,12 @@ async def delete_promo(callback: CallbackQuery):
     await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
 @router.callback_query(lambda c: c.data == "back_to_promos")
 async def back_to_promos(callback: CallbackQuery):
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     c.execute('SELECT code FROM promo_codes')
     promos = c.fetchall()
@@ -232,10 +256,15 @@ async def process_promo_uses(message: Message, state: FSMContext):
     amount = data['amount']
     max_uses = int(message.text)
     
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     try:
-        c.execute('INSERT INTO promo_codes (code, amount, max_uses) VALUES (?, ?, ?)',
+        c.execute('INSERT INTO promo_codes (code, amount, max_uses) VALUES (%s, %s, %s)',
                  (code, amount, max_uses))
         conn.commit()
         await message.answer(f"""
@@ -244,7 +273,7 @@ async def process_promo_uses(message: Message, state: FSMContext):
 Сумма: {amount}₣
 Макс. использований: {max_uses}
 """)
-    except sqlite3.IntegrityError:
+    except mysql.connector.IntegrityError:
         await message.answer("Такой промокод уже существует!")
     finally:
         conn.close()
@@ -260,11 +289,16 @@ async def activate_promo(message: Message):
     code = message.text.split()[1]
     user_id = message.from_user.id
     
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     
     # Проверяем существование промокода
-    c.execute('SELECT amount, max_uses, current_uses FROM promo_codes WHERE code = ?', (code,))
+    c.execute('SELECT amount, max_uses, current_uses FROM promo_codes WHERE code = %s', (code,))
     promo = c.fetchone()
     
     if not promo:
@@ -275,7 +309,7 @@ async def activate_promo(message: Message):
     amount, max_uses, current_uses = promo
     
     # Проверяем, не использовал ли пользователь этот промокод
-    c.execute('SELECT 1 FROM promo_uses WHERE user_id = ? AND code = ?', (user_id, code))
+    c.execute('SELECT 1 FROM promo_uses WHERE user_id = %s AND code = %s', (user_id, code))
     if c.fetchone():
         await message.answer("❌ Вы уже использовали этот промокод")
         conn.close()
@@ -289,9 +323,9 @@ async def activate_promo(message: Message):
         
     try:
         # Начисляем баланс и обновляем статистику
-        c.execute('UPDATE users SET balance = balance + ? WHERE user_id = ?', (amount, user_id))
-        c.execute('UPDATE promo_codes SET current_uses = current_uses + 1 WHERE code = ?', (code,))
-        c.execute('INSERT INTO promo_uses (user_id, code) VALUES (?, ?)', (user_id, code))
+        c.execute('UPDATE users SET balance = balance + %s WHERE user_id = %s', (amount, user_id))
+        c.execute('UPDATE promo_codes SET current_uses = current_uses + 1 WHERE code = %s', (code,))
+        c.execute('INSERT INTO promo_uses (user_id, code) VALUES (%s, %s)', (user_id, code))
         conn.commit()
         
         await message.answer(f"✅ Промокод активирован! Начислено {amount}₣")
@@ -449,13 +483,18 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
         return
 
     # Получаем пользователей согласно выбранным критериям
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     
     if data['recipients'] == "all":
         c.execute('SELECT user_id FROM users')
     else:
-        c.execute('SELECT user_id FROM users WHERE level = ?', (level,))
+        c.execute('SELECT user_id FROM users WHERE level = %s', (level,))
     
     users = c.fetchall()
     conn.close()
@@ -544,30 +583,40 @@ async def start_command(message: Message):
     )
 
 def register_user(user_id: int, username: str, referrer_id: int = None):
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     
     # Проверяем существует ли пользователь
-    c.execute('SELECT user_id FROM users WHERE user_id = ?', (user_id,))
+    c.execute('SELECT user_id FROM users WHERE user_id = %s', (user_id,))
     if not c.fetchone():
         c.execute('''INSERT INTO users (user_id, username, referrer_id)
-                    VALUES (?, ?, ?)''', (user_id, username, referrer_id))
+                    VALUES (%s, %s, %s)''', (user_id, username, referrer_id))
         
         # Если есть реферер, обновляем его статистику
         if referrer_id:
             c.execute('''UPDATE users 
                         SET invited_users = invited_users + 1,
                             balance = balance + 1000
-                        WHERE user_id = ?''', (referrer_id,))
+                        WHERE user_id = %s''', (referrer_id,))
     
     conn.commit()
     conn.close()
 
 # Функция получения данных пользователя
 def get_user_data(user_id: int) -> Dict:
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
-    c.execute('SELECT * FROM users WHERE user_id = ?', (user_id,))
+    c.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
     user = c.fetchone()
     conn.close()
     
@@ -582,7 +631,12 @@ def get_user_data(user_id: int) -> Dict:
 
 # Функция проверки уровня
 async def check_level_requirements(user_id: int):
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     
     user_data = get_user_data(user_id)
@@ -592,25 +646,25 @@ async def check_level_requirements(user_id: int):
     if current_level == 1:
         # Проверка выполнения задания с подпиской
         c.execute('''UPDATE users SET level = 2 
-                    WHERE user_id = ? AND tasks_completed LIKE '%subscription%' ''', 
-                    (user_id,))
+                    WHERE user_id = %s AND tasks_completed LIKE %s''', 
+                    (user_id, '%subscription%'))
     elif current_level == 2:
         # Проверка выполнения задания с регистрацией
         c.execute('''UPDATE users SET level = 3 
-                    WHERE user_id = ? AND tasks_completed LIKE '%registration%' ''',
-                    (user_id,))
+                    WHERE user_id = %s AND tasks_completed LIKE %s''',
+                    (user_id, '%registration%'))
     elif current_level == 3:
         # Проверка наличия 5 приглашенных друзей 2 уровня
         c.execute('''SELECT COUNT(*) FROM users 
-                    WHERE referrer_id = ? AND level >= 2''', (user_id,))
+                    WHERE referrer_id = %s AND level >= 2''', (user_id,))
         if c.fetchone()[0] >= 5:
-            c.execute('UPDATE users SET level = 4 WHERE user_id = ?', (user_id,))
+            c.execute('UPDATE users SET level = 4 WHERE user_id = %s', (user_id,))
     elif current_level == 4:
         # Проверка наличия 15 приглашенных друзей
         c.execute('''SELECT COUNT(*) FROM users 
-                    WHERE referrer_id = ?''', (user_id,))
+                    WHERE referrer_id = %s''', (user_id,))
         if c.fetchone()[0] >= 15:
-            c.execute('UPDATE users SET level = 5 WHERE user_id = ?', (user_id,))
+            c.execute('UPDATE users SET level = 5 WHERE user_id = %s', (user_id,))
     
     conn.commit()
     conn.close()
@@ -651,7 +705,12 @@ async def get_level_statistics(message: Message):
 
 # Функция получения статистики
 def get_statistics() -> Dict:
-    conn = sqlite3.connect('bot_database.db')
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
     c = conn.cursor()
     
     stats = {
@@ -672,7 +731,7 @@ def get_statistics() -> Dict:
     
     # Новые пользователи за сегодня
     c.execute('''SELECT COUNT(*) FROM users 
-                WHERE date(join_date) = date('now')''')
+                WHERE DATE(join_date) = CURDATE()''')
     stats['new_today'] = c.fetchone()[0]
     
     # Пользователи без рефералов
