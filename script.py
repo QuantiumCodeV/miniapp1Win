@@ -612,12 +612,24 @@ def register_user(user_id: int, username: str, referrer_id: int = None):
         c.execute('''INSERT INTO users (user_id, username, referrer_id)
                     VALUES (%s, %s, %s)''', (user_id, username, referrer_id))
         
-        # Если есть реферер, обновляем его статистику
+        # Если есть реферер, обновляем его статистику и начисляем бонус в зависимости от уровня
         if referrer_id:
+            c.execute('SELECT level FROM users WHERE user_id = %s', (referrer_id,))
+            level = c.fetchone()[0]
+            
+            bonus = {
+                1: 2000,
+                2: 2000,
+                3: 5000, 
+                4: 6000,
+                5: 10000
+            }.get(level, 2000)  # По умолчанию 2000 если уровень неизвестен
+            
             c.execute('''UPDATE users 
                         SET invited_users = invited_users + 1,
-                            balance = balance + 1000, zadanie_5 = 1
-                        WHERE user_id = %s''', (referrer_id,))
+                            balance = balance + %s,
+                            zadanie_5 = 1
+                        WHERE user_id = %s''', (bonus, referrer_id))
     
     conn.commit()
     conn.close()
