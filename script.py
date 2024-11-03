@@ -81,24 +81,20 @@ async def handle_incoming_messages(message: Message):
     # Проверка на регистрацию
     if text.startswith("1вин:регистрация:"):
         user_id = text.split(":")[2]
-        await process_registration(user_id)
+        await message.answer(f"Пользователь {user_id} успешно зарегистрирован!")
     
-    # Проверка на первый депозит
+    # Проверка на первый депозит 
     elif text.startswith("1вин:") and ":первый_депозит:" in text:
         parts = text.split(":")
         user_id = parts[1]
         amount = parts[3]
-        await process_first_deposit(user_id, amount)
+        await message.answer(f"Пользователь {user_id} успешно внес первый депозит в размере {amount}!")
 
 async def process_registration(user_id: str):
-    # Логика обработки регистрации
     print(f"Пользователь {user_id} зарегистрировался.")
-    # Здесь вы можете добавить код для обновления базы данных или уведомления пользователей
 
 async def process_first_deposit(user_id: str, amount: str):
-    # Логика обработки первого депозита
     print(f"Пользователь {user_id} сделал первый депозит: {amount}.")
-    # Здесь вы можете добавить код для обновления базы данных или уведомления пользователей
 
 
 # Обработчик списка промокодов
