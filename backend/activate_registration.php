@@ -1,7 +1,7 @@
 <?php
 require_once 'config.php';
 
-$user_id = $_POST['user_id'];
+$user_id = $_GET['user_id'];
 
 // Проверяем, существует ли пользователь
 $check_user = $mysql->query("SELECT user_id FROM users WHERE user_id = $user_id");

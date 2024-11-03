@@ -616,7 +616,7 @@ def register_user(user_id: int, username: str, referrer_id: int = None):
         if referrer_id:
             c.execute('''UPDATE users 
                         SET invited_users = invited_users + 1,
-                            balance = balance + 1000
+                            balance = balance + 1000, zadanie_5 = 1
                         WHERE user_id = %s''', (referrer_id,))
     
     conn.commit()
