@@ -74,7 +74,12 @@
     <img src="./assets/img/help.svg" alt="" class="main_help" id="openhelp">
     <div class="main_center">
       <h2 class="main_tittle">ВАШ БАЛАНС</h2>
-      <h1 class="main_balance" id="userBalance">0₣</h1>
+      <?php
+        include "backend/config.php";
+        $user_id = $_POST["user_id"];
+        $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+        echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
+      ?>
       <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
       <div class="main_buttons">
         <button class="main_button" id="inviteBtn" onclick="copyLink()">Пригласить друзей</button>
@@ -109,22 +114,6 @@
       console.log('Имя пользователя:', user.first_name);
       console.log('Юзернейм:', user.username);
       localStorage.setItem('user_id', user.id);
-      
-      function getUserBalance() {
-        $.ajax({
-          url: "/backend/get_user_balance.php", 
-          method: "POST",
-          data: {
-            user_id: user.id
-          },
-          success: function(response) {
-            let balance = JSON.parse(response).balance;
-            $("#userBalance").text(balance + "₣");
-          }
-        });
-      }
-
-      getUserBalance();
 
       function copyLink() {
         let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
