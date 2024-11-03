@@ -50,8 +50,12 @@ def init_db():
                   balance INT DEFAULT 0,
                   invited_users INT DEFAULT 0,
                   referrer_id BIGINT,
-                  tasks_completed TEXT,
-                  join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+                  join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  1_zadanie BOOLEAN DEFAULT FALSE,
+                  2_zadanie BOOLEAN DEFAULT FALSE,
+                  3_zadanie BOOLEAN DEFAULT FALSE,
+                  4_zadanie BOOLEAN DEFAULT FALSE,
+                  5_zadanie BOOLEAN DEFAULT FALSE)''')
                   
     cursor.execute('''CREATE TABLE IF NOT EXISTS promo_codes
                  (code VARCHAR(255) PRIMARY KEY,
@@ -682,25 +686,35 @@ async def check_level_requirements(user_id: int):
     # Логика проверки требований для каждого уровня
     if current_level == 1:
         # Проверка выполнения задания с подпиской
-        c.execute('''UPDATE users SET level = 2 
-                    WHERE user_id = %s AND tasks_completed LIKE %s''', 
-                    (user_id, '%subscription%'))
+        c.execute('SELECT 1_zadanie FROM users WHERE user_id = %s', (user_id,))
+        if c.fetchone()[0]:
+            c.execute('UPDATE users SET level = 2 WHERE user_id = %s', (user_id,))
+            
     elif current_level == 2:
         # Проверка выполнения задания с регистрацией
-        c.execute('''UPDATE users SET level = 3 
-                    WHERE user_id = %s AND tasks_completed LIKE %s''',
-                    (user_id, '%registration%'))
+        c.execute('SELECT 2_zadanie FROM users WHERE user_id = %s', (user_id,))
+        if c.fetchone()[0]:
+            c.execute('UPDATE users SET level = 3 WHERE user_id = %s', (user_id,))
+            
     elif current_level == 3:
         # Проверка наличия 5 приглашенных друзей 2 уровня
         c.execute('''SELECT COUNT(*) FROM users 
                     WHERE referrer_id = %s AND level >= 2''', (user_id,))
         if c.fetchone()[0] >= 5:
             c.execute('UPDATE users SET level = 4 WHERE user_id = %s', (user_id,))
+            
     elif current_level == 4:
         # Проверка наличия 15 приглашенных друзей
         c.execute('''SELECT COUNT(*) FROM users 
                     WHERE referrer_id = %s''', (user_id,))
         if c.fetchone()[0] >= 15:
+            c.execute('UPDATE users SET level = 5 WHERE user_id = %s', (user_id,))
+            
+    elif current_level == 5:
+        # Проверка наличия 3 друзей 3 уровня
+        c.execute('''SELECT COUNT(*) FROM users 
+                    WHERE referrer_id = %s AND level >= 3''', (user_id,))
+        if c.fetchone()[0] >= 3:
             c.execute('UPDATE users SET level = 5 WHERE user_id = %s', (user_id,))
     
     conn.commit()
