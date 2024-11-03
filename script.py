@@ -76,6 +76,7 @@ def init_db():
 
 @router.message()
 async def handle_incoming_messages(message: Message):
+    print(message)
     text = message.text
     
     # Проверка на регистрацию
