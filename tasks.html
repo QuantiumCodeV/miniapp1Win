@@ -112,6 +112,7 @@
                 url: "/backend/get_links.php",
                 method: "GET",
                 success: function (response) {
+                  console.log(response);
                   var responseJSON = JSON.parse(response);
                   console.log(responseJSON);
 
@@ -152,6 +153,7 @@
                 method: "POST",
                 data: { user_id: localStorage.getItem("user_id") },
                 success: function (response) {
+                  
                   var responseJSON = JSON.parse(response);
                   console.log(responseJSON);
 
