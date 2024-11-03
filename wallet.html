@@ -77,13 +77,13 @@
             let data = JSON.parse(response);
             let walletInfo = document.getElementById('walletInfo');
             
-            if (!data.zadanie_1 || !data.zadanie_2) {
+            if (data.zadanie_1 != "1" || data.zadanie_2 != "1") {
               walletInfo.innerHTML = 'Для вывода необходимо выполнить <span>2 задания</span> с подпиской';
-            } else if (!data.zadanie_3) {
+            } else if (data.zadanie_3 == "0") {
               walletInfo.innerHTML = 'Для вывода необходимо выполнить регистрацию на сайте';
-            } else if (!data.zadanie_4) {
+            } else if (data.zadanie_4 == "0") {
               walletInfo.innerHTML = 'Для вывода необходимо сделать первый депозит';
-            } else if (!data.zadanie_5) {
+            } else if (data.zadanie_5 == "0") {
               walletInfo.innerHTML = 'Для вывода необходимо пригласить 1 друга';
             }
           }
