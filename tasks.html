@@ -150,7 +150,16 @@
                   console.log(response);
                   var responseJSON = JSON.parse(response);
                   if (responseJSON.success) {
-                    window.location.reload();
+                    if (zadanie == "zadanie_1") {
+                      window.location.href = $("#channel1")
+                        .find(".tasks_item_accept")
+                        .attr("data-link");
+                    }
+                    if (zadanie == "zadanie_2") {
+                      window.location.href = $("#channel2")
+                        .find(".tasks_item_accept")
+                        .attr("data-link");
+                    }
                   }
                 },
               });
