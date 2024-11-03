@@ -77,8 +77,8 @@
       <h1 class="main_balance" id="userBalance">0₣</h1>
       <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
       <div class="main_buttons">
-        <button class="main_button" id="inviteBtn">Пригласить друзей</button>
-        <img src="./assets/img/copy.svg" alt="" class="main_copy" id="copyBtn">
+        <button class="main_button" id="inviteBtn" onclick="copyLink()">Пригласить друзей</button>
+        <img src="./assets/img/copy.svg" alt="" class="main_copy" id="copyBtn" onclick="copyLink()">
       </div>
     </div>
   </div>
@@ -125,6 +125,11 @@
       }
 
       getUserBalance();
+
+      function copyLink() {
+        let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
+        navigator.clipboard.writeText(link);
+      }
     </script>
     
     <script src="assets/js/script.js"></script>
