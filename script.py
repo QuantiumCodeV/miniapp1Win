@@ -29,10 +29,11 @@ class PromoStates(StatesGroup):
 bot = Bot(token="7666407425:AAF623qqMheTU-SD_zTbFqmy8w2i_WHGAFw")
 dp = Dispatcher()
 router = Router()
-
 # Определите ID администратора
 ADMIN_ID = 612475751  # Замените на ваш фактический ID администратора
-
+FIRST_CHANNEL_LINK = "https://t.me/+cdlYMb4VnbgzZDVi"
+SECOND_CHANNEL_LINK = "https://t.me/+1uS2fYpUS4dmNWI6"
+WIN_LINK = "https://1wwwl.com/?open=register"
 # Создание базы данных
 def init_db():
     conn = mysql.connector.connect(
@@ -71,6 +72,15 @@ def init_db():
                   FOREIGN KEY(user_id) REFERENCES users(user_id),
                   FOREIGN KEY(code) REFERENCES promo_codes(code),
                   PRIMARY KEY(user_id, code))''')
+    
+    cursor.execute('''CREATE TABLE IF NOT EXISTS links
+                 (user_id BIGINT,
+                  first_channel VARCHAR(255) DEFAULT %s,
+                  second_channel VARCHAR(255) DEFAULT %s,
+                  win_link VARCHAR(255) DEFAULT %s,
+                  FOREIGN KEY(user_id) REFERENCES users(user_id),
+                  PRIMARY KEY(user_id))''', (FIRST_CHANNEL_LINK, SECOND_CHANNEL_LINK, WIN_LINK))
+    
     conn.commit()
     cursor.close()
     conn.close()
