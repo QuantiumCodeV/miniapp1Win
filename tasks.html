@@ -157,23 +157,23 @@
                   var responseJSON = JSON.parse(response);
                   console.log(responseJSON);
 
-                  if (responseJSON.zadanie_1) {
+                  if (responseJSON.zadanie_1 == "1") {
                     $("#channel1").find(".tasks_item_accept").show();
                     $("#channel1").find(".tasks_item_price").hide();
                   }
-                  if (responseJSON.zadanie_2) {
+                  if (responseJSON.zadanie_2 == "1") {
                     $("#channel2").find(".tasks_item_accept").show();
                     $("#channel2").find(".tasks_item_price").hide();
                   }
-                  if (responseJSON.zadanie_3) {
+                  if (responseJSON.zadanie_3 == "1" ) {
                     $("#1win").find(".tasks_item_accept").show();
                     $("#1win").find(".tasks_item_price").hide();
                   }
-                  if (responseJSON.zadanie_4) {
+                  if (responseJSON.zadanie_4 == "1") {
                     $("#deposit").find(".tasks_item_accept").show();
                     $("#deposit").find(".tasks_item_price").hide();
                   }
-                  if (responseJSON.zadanie_5) {
+                  if (responseJSON.zadanie_5 == "1") {
                     $("#invite").find(".tasks_item_accept").show();
                     $("#invite").find(".tasks_item_price").hide();
                   }
