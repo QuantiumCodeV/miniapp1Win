@@ -110,7 +110,7 @@
             function getLinks() {
               $.ajax({
                 url: "/backend/get_links.php",
-                method: "GET",
+                method: "POST",
                 success: function (response) {
                   console.log(response);
                   var responseJSON = JSON.parse(response);

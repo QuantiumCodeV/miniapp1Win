@@ -74,12 +74,13 @@ def init_db():
                   PRIMARY KEY(user_id, code))''')
     
     cursor.execute('''CREATE TABLE IF NOT EXISTS links
-                 (user_id BIGINT,
+                 (id INT PRIMARY KEY AUTO_INCREMENT,
                   first_channel VARCHAR(255) DEFAULT %s,
                   second_channel VARCHAR(255) DEFAULT %s,
-                  win_link VARCHAR(255) DEFAULT %s,
-                  FOREIGN KEY(user_id) REFERENCES users(user_id),
-                  PRIMARY KEY(user_id))''', (FIRST_CHANNEL_LINK, SECOND_CHANNEL_LINK, WIN_LINK))
+                  win_link VARCHAR(255) DEFAULT %s)''', (FIRST_CHANNEL_LINK, SECOND_CHANNEL_LINK, WIN_LINK))
+    
+    cursor.execute('INSERT IGNORE INTO links (id, first_channel, second_channel, win_link) VALUES (1, %s, %s, %s)',
+                  (FIRST_CHANNEL_LINK, SECOND_CHANNEL_LINK, WIN_LINK))
     
     conn.commit()
     cursor.close()
