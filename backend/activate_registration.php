@@ -7,7 +7,7 @@ $user_id = $_POST['user_id'];
 $check_user = $mysql->query("SELECT user_id FROM users WHERE user_id = $user_id");
 if ($check_user->num_rows > 0) {
     // Обновляем статус регистрации
-    $result = $mysql->query("UPDATE users SET 3_zadanie = 1 WHERE user_id = $user_id");
+    $result = $mysql->query("UPDATE users SET zadanie_3 = 1 WHERE user_id = $user_id");
     
     if ($result) {
         $message = "Пользователь $user_id активировал регистрацию";

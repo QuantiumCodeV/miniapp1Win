@@ -4,7 +4,7 @@ require_once 'config.php';
 
 $user_id = $_POST['user_id'];
 
-$result = $mysql->query("UPDATE users SET balance = balance + 100, 4_zadanie = 1 WHERE user_id = $user_id");
+$result = $mysql->query("UPDATE users SET balance = balance + 100, zadanie_4 = 1 WHERE user_id = $user_id");
 
 $message = "Пользователь $user_id сделал первый депозит";
 

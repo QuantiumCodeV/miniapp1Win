@@ -33,22 +33,36 @@
         <img src="./assets/img/tasks_image.svg" alt="" class="tasks_image" />
         <h1 class="tasks_tittle">ВЫПОЛНЕНИЕ ЗАДАНИЙ</h1>
         <div class="tasks_items">
-          <div class="tasks_item" id="channel1">
+          <div
+            class="tasks_item"
+            id="channel1"
+            onclick="successSubscription('zadanie_1')"
+          >
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Подписаться на первый канал</p>
+              <p class="tasks_item_price" id="channel1_price">1000₣</p>
               <img
+                id="channel1_accept"
                 src="./assets/img/tasks_accept.svg"
                 alt=""
                 class="tasks_item_accept"
+                style="display: none"
               />
             </div>
           </div>
-          <div class="tasks_item" id="channel2">
+          <div
+            class="tasks_item"
+            id="channel2"
+            onclick="successSubscription('zadanie_2')"
+          >
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Подписаться на второй канал</p>
+              <p class="tasks_item_price" id="channel2_price">1000₣</p>
               <img
+                id="channel2_accept"
                 src="./assets/img/tasks_accept.svg"
                 alt=""
+                style="display: none"
                 class="tasks_item_accept"
               />
             </div>
@@ -56,19 +70,40 @@
           <div class="tasks_item" id="1win">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Регистрация на сайте</p>
-              <p class="tasks_item_price">1000₣</p>
+              <p class="tasks_item_price" id="1win_price">1000₣</p>
+              <img
+                id="1win_accept"
+                src="./assets/img/tasks_accept.svg"
+                alt=""
+                class="tasks_item_accept"
+                style="display: none"
+              />
             </div>
           </div>
-          <div class="tasks_item">
+          <div class="tasks_item" id="deposit">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Сделать депозит</p>
-              <p class="tasks_item_price">3000₣</p>
+              <p class="tasks_item_price" id="deposit_price">3000₣</p>
+              <img
+                id="deposit_accept"
+                src="./assets/img/tasks_accept.svg"
+                alt=""
+                class="tasks_item_accept"
+                style="display: none"
+              />
             </div>
           </div>
-          <div class="tasks_item">
+          <div class="tasks_item" id="invite">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Пригласить друга</p>
-              <p class="tasks_item_price">1000₣</p>
+              <p class="tasks_item_price" id="invite_price">1000₣</p>
+              <img
+                id="invite_accept"
+                src="./assets/img/tasks_accept.svg"
+                alt=""
+                class="tasks_item_accept"
+                style="display: none"
+              />
             </div>
           </div>
           <script>
@@ -76,14 +111,71 @@
               $.ajax({
                 url: "/backend/get_links.php",
                 method: "POST",
-                data: { user_id: localStorage.getItem('user_id') },
+                data: { user_id: localStorage.getItem("user_id") },
                 success: function (response) {
                   var responseJSON = JSON.parse(response);
                   console.log(responseJSON);
 
-                  $("#channel1").find(".tasks_item_accept").attr("src", responseJSON.first_channel);
-                  $("#channel2").find(".tasks_item_accept").attr("src", responseJSON.second_channel);
-                  $("#1win").find(".tasks_item_accept").attr("src", responseJSON.win_link);
+                  $("#channel1")
+                    .find(".tasks_item_accept")
+                    .attr("src", responseJSON.first_channel);
+                  $("#channel2")
+                    .find(".tasks_item_accept")
+                    .attr("src", responseJSON.second_channel);
+                  $("#1win")
+                    .find(".tasks_item_accept")
+                    .attr("src", responseJSON.win_link);
+                },
+              });
+            }
+
+            function successSubscription(zadanie) {
+              $.ajax({
+                url: "/backend/success_subscriptions.php",
+                method: "POST",
+                data: {
+                  user_id: localStorage.getItem("user_id"),
+                  zadanie: zadanie,
+                },
+                success: function (response) {
+                  console.log(response);
+
+                  if (responseJSON.success) {
+                    window.location.reload();
+                  }
+                },
+              });
+            }
+
+            function getSuccessTasks() {
+              $.ajax({
+                url: "/backend/get_success_tasks.php",
+                method: "POST",
+                data: { user_id: localStorage.getItem("user_id") },
+                success: function (response) {
+                  var responseJSON = JSON.parse(response);
+                  console.log(responseJSON);
+
+                  if (responseJSON.zadanie_1) {
+                    $("#channel1").find(".tasks_item_accept").show();
+                    $("#channel1").find(".tasks_item_price").hide();
+                  }
+                  if (responseJSON.zadanie_2) {
+                    $("#channel2").find(".tasks_item_accept").show();
+                    $("#channel2").find(".tasks_item_price").hide();
+                  }
+                  if (responseJSON.zadanie_3) {
+                    $("#1win").find(".tasks_item_accept").show();
+                    $("#1win").find(".tasks_item_price").hide();
+                  }
+                  if (responseJSON.zadanie_4) {
+                    $("#deposit").find(".tasks_item_accept").show();
+                    $("#deposit").find(".tasks_item_price").hide();
+                  }
+                  if (responseJSON.zadanie_5) {
+                    $("#invite").find(".tasks_item_accept").show();
+                    $("#invite").find(".tasks_item_price").hide();
+                  }
                 },
               });
             }
@@ -98,11 +190,11 @@
           />
           <p class="tasks_promocode_error" style="display: none"></p>
           <p class="tasks_promocode_success" style="display: none"></p>
-          
+
           <button class="tasks_promocode_button" onclick="activatePromo()">
             Применить
           </button>
-          
+
           <script>
             async function activatePromo() {
               let promoCode = document.querySelector(
@@ -121,7 +213,10 @@
               $.ajax({
                 url: "/backend/activate_promo.php",
                 method: "POST",
-                data: { promo: promoCode, user_id: localStorage.getItem('user_id') },
+                data: {
+                  promo: promoCode,
+                  user_id: localStorage.getItem("user_id"),
+                },
                 success: function (response) {
                   console.log(response);
                   var responseJSON = JSON.parse(response);
@@ -132,7 +227,9 @@
                       $(".tasks_promocode_error").hide();
                     }, 3000);
                   } else {
-                    $(".tasks_promocode_success").text(responseJSON.success).show();
+                    $(".tasks_promocode_success")
+                      .text(responseJSON.success)
+                      .show();
                     $(".tasks_promocode_error").hide();
                     setTimeout(() => {
                       $(".tasks_promocode_success").hide();

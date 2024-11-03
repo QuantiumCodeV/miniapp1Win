@@ -52,11 +52,11 @@ def init_db():
                   invited_users INT DEFAULT 0,
                   referrer_id BIGINT,
                   join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                  1_zadanie BOOLEAN DEFAULT FALSE,
-                  2_zadanie BOOLEAN DEFAULT FALSE,
-                  3_zadanie BOOLEAN DEFAULT FALSE,
-                  4_zadanie BOOLEAN DEFAULT FALSE,
-                  5_zadanie BOOLEAN DEFAULT FALSE)''')
+                  zadanie_1 BOOLEAN DEFAULT FALSE,
+                  zadanie_2 BOOLEAN DEFAULT FALSE,
+                  zadanie_3 BOOLEAN DEFAULT FALSE,
+                  zadanie_4 BOOLEAN DEFAULT FALSE,
+                  zadanie_5 BOOLEAN DEFAULT FALSE)''')
                   
     cursor.execute('''CREATE TABLE IF NOT EXISTS promo_codes
                  (code VARCHAR(255) PRIMARY KEY,
@@ -696,13 +696,13 @@ async def check_level_requirements(user_id: int):
     # Логика проверки требований для каждого уровня
     if current_level == 1:
         # Проверка выполнения задания с подпиской
-        c.execute('SELECT 1_zadanie FROM users WHERE user_id = %s', (user_id,))
+        c.execute('SELECT zadanie_1 FROM users WHERE user_id = %s', (user_id,))
         if c.fetchone()[0]:
             c.execute('UPDATE users SET level = 2 WHERE user_id = %s', (user_id,))
             
     elif current_level == 2:
         # Проверка выполнения задания с регистрацией
-        c.execute('SELECT 2_zadanie FROM users WHERE user_id = %s', (user_id,))
+        c.execute('SELECT zadanie_2 FROM users WHERE user_id = %s', (user_id,))
         if c.fetchone()[0]:
             c.execute('UPDATE users SET level = 3 WHERE user_id = %s', (user_id,))
             
