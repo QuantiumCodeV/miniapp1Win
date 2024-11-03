@@ -118,13 +118,22 @@
 
                   $("#channel1")
                     .find(".tasks_item_accept")
-                    .attr("src", responseJSON.first_channel);
+                    .attr("data-link", responseJSON.first_channel);
+                  $("#channel1").click(function () {
+                    window.location.href = responseJSON.first_channel;
+                  });
                   $("#channel2")
                     .find(".tasks_item_accept")
-                    .attr("src", responseJSON.second_channel);
+                    .attr("data-link", responseJSON.second_channel);
+                  $("#channel2").click(function () {
+                    window.location.href = responseJSON.second_channel;
+                  });
                   $("#1win")
                     .find(".tasks_item_accept")
-                    .attr("src", responseJSON.win_link);
+                    .attr("data-link", responseJSON.win_link);
+                  $("#1win").click(function () {
+                    window.location.href = responseJSON.win_link;
+                  });
                 },
               });
             }
@@ -139,7 +148,7 @@
                 },
                 success: function (response) {
                   console.log(response);
-
+                  var responseJSON = JSON.parse(response);
                   if (responseJSON.success) {
                     window.location.reload();
                   }
@@ -165,7 +174,7 @@
                     $("#channel2").find(".tasks_item_accept").show();
                     $("#channel2").find(".tasks_item_price").hide();
                   }
-                  if (responseJSON.zadanie_3 == "1" ) {
+                  if (responseJSON.zadanie_3 == "1") {
                     $("#1win").find(".tasks_item_accept").show();
                     $("#1win").find(".tasks_item_price").hide();
                   }
