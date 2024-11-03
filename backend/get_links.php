@@ -6,5 +6,9 @@ include "config.php";
 
 $result = $mysql->query("SELECT * FROM links");
 
-echo json_encode($result->fetch_assoc());
+if ($result && $result->num_rows > 0) {
+    echo json_encode($result->fetch_assoc());
+} else {
+    echo json_encode($result);
+}
 ?>
