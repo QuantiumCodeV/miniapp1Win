@@ -80,39 +80,39 @@
         session_start();
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
-        include "backend/config.php";
+        require_once "backend/config.php";
 
         // Если user_id еще не сохранен в куки 
         if (!isset($_COOKIE['user_id'])) {
-            $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
-            if ($user_id) {
-                // Устанавливаем куки
-                setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
-                // После установки куки, можно сделать редирект, чтобы обновить страницу
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit; // Завершаем выполнение скрипта
-            }
+          $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
+          if ($user_id) {
+            // Устанавливаем куки
+            setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
+            // После установки куки, можно сделать редирект, чтобы обновить страницу
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit; // Завершаем выполнение скрипта
+          }
         }
 
         // Проверяем наличие куки
         if (isset($_COOKIE['user_id'])) {
-            $user_id = $_COOKIE['user_id'];
-            
-            // Защита от SQL-инъекций
-            $user_id = $mysql->real_escape_string($user_id);
+          $user_id = $_COOKIE['user_id'];
 
-            // Проверяем существование пользователя
-            $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+          // Защита от SQL-инъекций
+          $user_id = $mysql->real_escape_string($user_id);
 
-            if ($result) {
-                echo '<h1 class="main_balance">' . htmlspecialchars($result['balance']) . '₣</h1>';
-            } else {
-                // Если пользователь не найден, создаем запись
-                $mysql->query("INSERT INTO users (user_id) VALUES ('$user_id')");
-                echo '<h1 class="main_balance">0₣</h1>';
-            }
-        } else {
+          // Проверяем существование пользователя
+          $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+
+          if ($result) {
+            echo '<h1 class="main_balance">' . htmlspecialchars($result['balance']) . '₣</h1>';
+          } else {
+            // Если пользователь не найден, создаем запись
+            $mysql->query("INSERT INTO users (user_id) VALUES ('$user_id')");
             echo '<h1 class="main_balance">0₣</h1>';
+          }
+        } else {
+          echo '<h1 class="main_balance">0₣</h1>';
         }
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
