@@ -86,7 +86,7 @@ def init_db():
     cursor.close()
     conn.close()
 
-@dp.message()
+@router.message()
 async def handle_incoming_messages(message: Message):
     print(message)
     
@@ -94,28 +94,30 @@ async def handle_incoming_messages(message: Message):
     if not message.text:
         return
         
-    # Обрабатываем сообщения из групп, независимо от того, кто их отправил
-    if message.chat.type in ['group', 'supergroup']:
-        text = message.text
+    # Обрабатываем сообщения только в группах
+    if message.chat.type not in ['group', 'supergroup']:
+        return
         
-        try:
-            # Проверка на регистрацию
-            if text.startswith("1вин:регистрация:"):
-                user_id = text.split(":")[2]
-                await process_registration(user_id)
-                await message.answer(f"Пользователь {user_id} успешно зарегистрирован!")
+    text = message.text
+    
+    try:
+        # Проверка на регистрацию
+        if text.startswith("1вин:регистрация:"):
+            user_id = text.split(":")[2]
+            await process_registration(user_id)
+            await message.answer(f"Пользователь {user_id} успешно зарегистрирован!")
+        
+        # Проверка на первый депозит 
+        elif text.startswith("1вин:") and ":первый_депозит:" in text:
+            parts = text.split(":")
+            user_id = parts[1]
+            amount = parts[3]
+            await process_first_deposit(user_id, amount)
+            await message.answer(f"Пользователь {user_id} успешно внес первый депозит в размере {amount}!")
             
-            # Проверка на первый депозит 
-            elif text.startswith("1вин:") and ":первый_депозит:" in text:
-                parts = text.split(":")
-                user_id = parts[1]
-                amount = parts[3]
-                await process_first_deposit(user_id, amount)
-                await message.answer(f"Пользователь {user_id} успешно внес первый депозит в размере {amount}!")
-            
-        except Exception as e:
-            print(f"Ошибка при обработке сообщения: {e}")
-            await message.answer("Произошла ошибка при обработке сообщения")
+    except Exception as e:
+        print(f"Ошибка при обработке сообщения: {e}")
+        await message.answer("Произошла ошибка при обработке сообщения")
 
 async def process_registration(user_id: str):
     print(f"Пользователь {user_id} зарегистрировался.")
@@ -124,8 +126,9 @@ async def process_first_deposit(user_id: str, amount: str):
     print(f"Пользователь {user_id} сделал первый депозит: {amount}.")
 
 
+
 # Обработчик списка промокодов
-@dp.message(Command("promos"))
+@router.message(Command("promos"))
 async def list_promos(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
@@ -151,7 +154,7 @@ async def list_promos(message: Message):
     
     await message.answer("Промокоды:", reply_markup=kb.as_markup())
 
-@dp.callback_query(lambda c: c.data.startswith("promo_info_"))
+@router.callback_query(lambda c: c.data.startswith("promo_info_"))
 async def show_promo_info(callback: CallbackQuery):
     code = callback.data.split("_")[2]
     
@@ -195,7 +198,7 @@ async def show_promo_info(callback: CallbackQuery):
         info_text,
         reply_markup=kb.as_markup()
     )
-@dp.callback_query(lambda c: c.data.startswith("delete_promo_"))
+@router.callback_query(lambda c: c.data.startswith("delete_promo_"))
 async def delete_promo(callback: CallbackQuery):
     if callback.from_user.id != ADMIN_ID:
         await callback.answer("У вас нет прав для удаления промокодов")
@@ -246,7 +249,7 @@ async def delete_promo(callback: CallbackQuery):
     kb.adjust(1)
     
     await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
-@dp.callback_query(lambda c: c.data == "back_to_promos")
+@router.callback_query(lambda c: c.data == "back_to_promos")
 async def back_to_promos(callback: CallbackQuery):
     conn = mysql.connector.connect(
         host="localhost",
@@ -270,7 +273,7 @@ async def back_to_promos(callback: CallbackQuery):
     await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
 
 # Обработчик создания промокода
-@dp.message(Command("createpromo"))
+@router.message(Command("createpromo"))
 async def create_promo(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
@@ -278,13 +281,13 @@ async def create_promo(message: Message, state: FSMContext):
     await message.answer("Введите код промокода:")
     await state.set_state(PromoStates.entering_code)
 
-@dp.message(PromoStates.entering_code)
+@router.message(PromoStates.entering_code)
 async def process_promo_code(message: Message, state: FSMContext):
     await state.update_data(code=message.text)
     await message.answer("Введите сумму начисления:")
     await state.set_state(PromoStates.entering_amount)
 
-@dp.message(PromoStates.entering_amount)
+@router.message(PromoStates.entering_amount)
 async def process_promo_amount(message: Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer("Пожалуйста, введите число")
@@ -294,7 +297,7 @@ async def process_promo_amount(message: Message, state: FSMContext):
     await message.answer("Введите максимальное количество использований:")
     await state.set_state(PromoStates.entering_uses)
 
-@dp.message(PromoStates.entering_uses)
+@router.message(PromoStates.entering_uses)
 async def process_promo_uses(message: Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer("Пожалуйста, введите число")
@@ -329,7 +332,7 @@ async def process_promo_uses(message: Message, state: FSMContext):
         await state.clear()
 
 # Обработчик активации промокода
-@dp.message(Command("promo"))
+@router.message(Command("promo"))
 async def activate_promo(message: Message):
     if len(message.text.split()) != 2:
         await message.answer("Использование: /promo КОД")
@@ -385,7 +388,7 @@ async def activate_promo(message: Message):
         conn.close()
 
 # Обработчик команды рассылки
-@dp.message(Command("broadcast"))
+@router.message(Command("broadcast"))
 async def start_broadcast(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
@@ -404,7 +407,7 @@ async def start_broadcast(message: Message, state: FSMContext):
     )
     await state.set_state(BroadcastStates.choosing_recipients)
 
-@dp.callback_query(lambda c: c.data.startswith("recipients_"))
+@router.callback_query(lambda c: c.data.startswith("recipients_"))
 async def process_recipients(callback: CallbackQuery, state: FSMContext):
     recipient_type = callback.data.split("_")[1]
     
@@ -420,7 +423,7 @@ async def process_recipients(callback: CallbackQuery, state: FSMContext):
     )
     await state.set_state(BroadcastStates.entering_text)
 
-@dp.message(BroadcastStates.entering_text)
+@router.message(BroadcastStates.entering_text)
 async def process_broadcast_text(message: Message, state: FSMContext):
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(text="Да", callback_data="add_button_yes"))
@@ -441,7 +444,7 @@ async def process_broadcast_text(message: Message, state: FSMContext):
     )
     await state.set_state(BroadcastStates.adding_button)
 
-@dp.callback_query(lambda c: c.data.startswith("add_button_"))
+@router.callback_query(lambda c: c.data.startswith("add_button_"))
 async def process_button_choice(callback: CallbackQuery, state: FSMContext):
     choice = callback.data.split("_")[2]
     
@@ -470,7 +473,7 @@ async def process_button_choice(callback: CallbackQuery, state: FSMContext):
         )
         await state.set_state(BroadcastStates.confirming)
 
-@dp.message(BroadcastStates.adding_button)
+@router.message(BroadcastStates.adding_button)
 async def process_button_data(message: Message, state: FSMContext):
     if message.text is None:
         await message.answer("❌ Текст кнопки не может быть пустым.")
@@ -506,7 +509,7 @@ async def process_button_data(message: Message, state: FSMContext):
     except ValueError:
         await message.answer("❌ Неверный формат. Используйте: текст|ссылка")
 
-@dp.callback_query(lambda c: c.data in ["confirm_broadcast", "cancel_broadcast"])
+@router.callback_query(lambda c: c.data in ["confirm_broadcast", "cancel_broadcast"])
 async def process_confirmation(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     
@@ -592,7 +595,7 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
     await state.clear()
 
 # Обработчик команды /start
-@dp.message(Command("start"))
+@router.message(Command("start"))
 async def start_command(message: Message):
     # Проверяем реферальный код
     args = message.text.split()
@@ -741,7 +744,7 @@ async def check_level_requirements(user_id: int):
     conn.close()
 
 # Команды для получения статистики
-@dp.message(Command("stats"))
+@router.message(Command("stats"))
 async def get_full_statistics(message: Message):
     stats = get_statistics()
     stats_text = f"""
@@ -761,7 +764,7 @@ async def get_full_statistics(message: Message):
     """
     await message.answer(stats_text, parse_mode=ParseMode.MARKDOWN)
 
-@dp.message(Command("level_stats"))
+@router.message(Command("level_stats"))
 async def get_level_statistics(message: Message):
     level = int(message.text.split()[1]) if len(message.text.split()) > 1 else 1
     stats = get_level_stats(level)
