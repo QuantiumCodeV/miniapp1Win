@@ -80,24 +80,26 @@
         ini_set('display_errors', 1);
         include "backend/config.php";
 
-        // Получаем данные из WebApp через URL параметры
-        $data = [];
-        if (isset($_GET['tgWebAppData'])) {
-          parse_str(urldecode($_GET['tgWebAppData']), $data);
-          if (isset($data['user'])) {
-            $user = json_decode(urldecode($data['user']), true);
-            $user_id = $user['id'];
+        // Получаем данные из WebApp через window.Telegram.WebApp
+        $headers = getallheaders();
+        $initData = isset($headers['X-Telegram-Init-Data']) ? $headers['X-Telegram-Init-Data'] : '';
 
-            $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
-            echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
-            echo '<p>User ID: ' . $user_id . '</p>';
-          }
-          else{
-            echo json_encode($data);
-          }
-        }
-        else{
-          echo json_encode($data);
+        if ($initData) {
+            parse_str($initData, $data);
+            if (isset($data['user'])) {
+                $user = json_decode($data['user'], true);
+                $user_id = $user['id'];
+
+                $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+                echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
+                echo '<p>User ID: ' . $user_id . '</p>';
+            } else {
+                echo '<h1 class="main_balance">0₣</h1>';
+                echo '<p>Ошибка получения данных пользователя</p>';
+            }
+        } else {
+            echo '<h1 class="main_balance">0₣</h1>'; 
+            echo '<p>Ошибка инициализации Telegram WebApp</p>';
         }
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
