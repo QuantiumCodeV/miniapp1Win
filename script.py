@@ -783,7 +783,7 @@ def get_statistics() -> Dict:
     
     # Statistiques par niveau
     for level in range(1, 6):
-        c.execute('SELECT COUNT(*) FROM users WHERE level = ?', (level,))
+        c.execute('SELECT COUNT(*) FROM users WHERE level = %s', (level,))
         stats[f'level_{level}'] = c.fetchone()[0]
     
     # Solde total
