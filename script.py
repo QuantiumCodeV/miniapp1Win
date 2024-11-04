@@ -734,6 +734,7 @@ async def get_full_statistics(message: Message):
 
 @router.message(Command("level_stats"))
 async def get_level_statistics(message: Message):
+    
     level = int(message.text.split()[1]) if len(message.text.split()) > 1 else 1
     stats = get_level_stats(level)
     stats_text = f"""
