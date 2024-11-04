@@ -85,9 +85,9 @@
         // Если user_id еще не сохранен в сессии
         if (!isset($_SESSION['user_id'])) {
           echo 'нет user_id в сессии';
-          echo $_SERVER['REQUEST_URI'];
+          echo $_SERVER['QUERY_STRING'];
             // Получаем данные из URL
-            $url = $_SERVER['REQUEST_URI'];
+            $url = $_SERVER['QUERY_STRING'];
             $parsed = parse_url($url);
             
             if (isset($parsed['query'])) {
