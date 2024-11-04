@@ -90,7 +90,7 @@ def init_db():
 @router.message()
 async def handle_incoming_messages(message: Message):
     print(message)
-    
+
     
     # Проверяем, что сообщение содержит текст
     if not message.text:
@@ -601,7 +601,7 @@ async def start_command(message: Message):
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(
         text="Открыть приложение",
-        web_app=WebAppInfo(url="https://miniapp.quantiumcode.online")
+        web_app=WebAppInfo(url="https://miniapp.quantiumcode.online?user_id={message.from_user.id}")
     ))
     
     # Создаем реферальную ссылку
