@@ -86,7 +86,8 @@
         if (!isset($_SESSION['user_id'])) {
             $user_id = $_GET['user_id'];
             $_SESSION['user_id'] = $user_id;
-            
+            echo json_encode($_SESSION);
+
         }
 
         if (isset($_SESSION['user_id'])) {
