@@ -75,6 +75,8 @@
     <div class="main_center">
       <h2 class="main_tittle">ВАШ БАЛАНС</h2>
       <?php
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
         include "backend/config.php";
         $user_id = $_POST["user_id"];
         $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();

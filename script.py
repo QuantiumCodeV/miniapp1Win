@@ -91,6 +91,7 @@ def init_db():
 async def handle_incoming_messages(message: Message):
     print(message)
     
+    
     # Проверяем, что сообщение содержит текст
     if not message.text:
         return
