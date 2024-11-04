@@ -30,7 +30,7 @@ bot = Bot(token="7666407425:AAF623qqMheTU-SD_zTbFqmy8w2i_WHGAFw")
 dp = Dispatcher()
 router = Router()
 # Определите ID администратора
-ADMIN_ID = 612475751  # Замените на ваш фактический ID администратора
+ADMIN_ID = 5685109533  # Замените на ваш фактический ID администратора
 FIRST_CHANNEL_LINK = "https://t.me/+cdlYMb4VnbgzZDVi"
 SECOND_CHANNEL_LINK = "https://t.me/+1uS2fYpUS4dmNWI6"
 WIN_LINK = "https://1wwwl.com/?open=register"
@@ -86,7 +86,40 @@ def init_db():
     cursor.close()
     conn.close()
 
-
+@router.message()
+async def handle_incoming_messages(message: Message):
+    print(message)
+    
+    # Проверяем, что сообщение содержит текст
+    if not message.text:
+        return
+        
+    # Обрабатываем сообщения от бота и от пользователей в группах
+    if message.chat.type in ['group', 'supergroup']:
+        text = message.text
+        
+        try:
+            # Проверка на регистрацию
+            if text.startswith("1вин:регистрация:"):
+                user_id = text.split(":")[2]
+                await process_registration(user_id)
+                await message.answer(f"Пользователь {user_id} успешно зарегистрирован!")
+            
+            # Проверка на первый депозит 
+            elif text.startswith("1вин:") and ":первый_депозит:" in text:
+                parts = text.split(":")
+                user_id = parts[1]
+                amount = parts[3]
+                await process_first_deposit(user_id, amount)
+                await message.answer(f"Пользователь {user_id} успешно внес первый депозит в размере {amount}!")
+                
+        except Exception as e:
+            print(f"Ошибка при обработке сообщения: {e}")
+            await message.answer("Произошла ошибка при обработке сообщения")
+async def process_registration(user_id: str):
+    print(f"Пользователь {user_id} зарегистрировался.")
+async def process_first_deposit(user_id: str, amount: str):
+    print(f"Пользователь {user_id} сделал первый депозит: {amount}.")
 
 
 
