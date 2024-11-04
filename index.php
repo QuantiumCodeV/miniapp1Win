@@ -13,6 +13,9 @@ if (!isset($_COOKIE['user_id'])) {
     $user_id = $_GET['user_id'];
   }
 }
+else {
+  $user_id = $_COOKIE['user_id'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru" class="">
@@ -95,8 +98,7 @@ if (!isset($_COOKIE['user_id'])) {
         
 
         // Проверяем наличие куки
-        if (isset($_COOKIE['user_id'])) {
-          $user_id = $_COOKIE['user_id'];
+        if (isset($user_id)) {
 
           // Защита от SQL-инъекций
           $user_id = $mysql->real_escape_string($user_id);
