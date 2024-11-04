@@ -79,12 +79,18 @@
         ini_set('display_errors', 1);
         include "backend/config.php";
         
-        // Получаем данные из WebApp
-        $data = json_decode(file_get_contents('php://input'), true);
-        $user_id = $data['user']['id'];
-        
-        $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
-        echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
+        // Получаем данные из WebApp через URL параметры
+        $data = [];
+        if (isset($_GET['tgWebAppData'])) {
+            parse_str(urldecode($_GET['tgWebAppData']), $data);
+            if (isset($data['user'])) {
+                $user = json_decode(urldecode($data['user']), true);
+                $user_id = $user['id'];
+                
+                $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+                echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
+            }
+        }
       ?>
       <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
       <div class="main_buttons">
