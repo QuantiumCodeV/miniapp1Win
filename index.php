@@ -132,7 +132,7 @@ else {
       <div class="navigations_content">
         <ul class="navigations_items">
           <li class="navigations_item navigations_item_active"><a href="index.php">Главная</a></li>
-          <li class="navigations_item"><a href="tasks.html">Задания</a></li>
+          <li class="navigations_item"><a href="tasks.php">Задания</a></li>
           <li class="navigations_item"><a href="friends.html">Друзья</a></li>
           <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
         </ul>

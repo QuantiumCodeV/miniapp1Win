@@ -168,7 +168,7 @@ $tasks = $tasks_result->fetch_assoc();
           <ul class="navigations_items">
             <li class="navigations_item"><a href="index.php">Главная</a></li>
             <li class="navigations_item navigations_item_active">
-              <a href="tasks.html">Задания</a>
+              <a href="tasks.php">Задания</a>
             </li>
             <li class="navigations_item"><a href="friends.html">Друзья</a></li>
             <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
