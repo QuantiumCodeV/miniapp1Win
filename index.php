@@ -103,9 +103,9 @@
                 }
             }
         }
-        elseif (isset($_SESSION['user_id'])) {
+        else {
             $user_id = $_SESSION['user_id'];
-            
+              
             // Проверяем существование пользователя
             $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
             
@@ -117,9 +117,6 @@
                 $mysql->query("INSERT INTO users (user_id, username) VALUES ('$user_id', '$username')");
                 echo '<h1 class="main_balance">0₣</h1>';
             }
-        } else {
-            echo '<h1 class="main_balance">0₣</h1>';
-            echo '<p>Ошибка инициализации Telegram WebApp</p>';
         }
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
