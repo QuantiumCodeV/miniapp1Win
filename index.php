@@ -84,17 +84,9 @@
 
         // Если user_id еще не сохранен в сессии
         if (!isset($_SESSION['user_id'])) {
-            // Получаем данные из URL
-            $url = $_SERVER['REQUEST_URI'];
-            $parsed = parse_url($url);
+            $user_id = $_GET['user_id'];
+            $_SESSION['user_id'] = $user_id;
             
-            if (isset($parsed['query'])) {
-                parse_str($parsed['query'], $params);
-                
-                if (isset($params['user_id'])) {
-                    $_SESSION['user_id'] = $params['user_id'];
-                }
-            }
         }
 
         if (isset($_SESSION['user_id'])) {
