@@ -76,26 +76,30 @@
       <div class="main_center">
         <h2 class="main_tittle">ВАШ БАЛАНС</h2>
         <?php
+        // Start session before any output
+        session_start();
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
         include "backend/config.php";
-        session_start();
 
         // Если user_id еще не сохранен в сессии
         if (!isset($_SESSION['user_id'])) {
             // Получаем данные из URL
             $url = $_SERVER['REQUEST_URI'];
             $parsed = parse_url($url);
-            parse_str($parsed['query'], $params);
+            
+            if (isset($parsed['query'])) {
+                parse_str($parsed['query'], $params);
 
-            if (isset($params['tgWebAppData'])) {
-                $data = urldecode($params['tgWebAppData']);
-                parse_str($data, $tg_data);
-                
-                if (isset($tg_data['user'])) {
-                    $user = json_decode($tg_data['user'], true);
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['username'] = $user['username'] ?? '';
+                if (isset($params['tgWebAppData'])) {
+                    $data = urldecode($params['tgWebAppData']);
+                    parse_str($data, $tg_data);
+                    
+                    if (isset($tg_data['user'])) {
+                        $user = json_decode($tg_data['user'], true);
+                        $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['username'] = $user['username'] ?? '';
+                    }
                 }
             }
         }
