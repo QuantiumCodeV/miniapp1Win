@@ -79,34 +79,40 @@
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
         include "backend/config.php";
+        session_start();
 
-        // Получаем данные из URL
-        $url = $_SERVER['REQUEST_URI'];
-        $parsed = parse_url($url);
-        parse_str($parsed['query'], $params);
+        // Если user_id еще не сохранен в сессии
+        if (!isset($_SESSION['user_id'])) {
+            // Получаем данные из URL
+            $url = $_SERVER['REQUEST_URI'];
+            $parsed = parse_url($url);
+            parse_str($parsed['query'], $params);
 
-        if (isset($params['tgWebAppData'])) {
-            $data = urldecode($params['tgWebAppData']);
-            parse_str($data, $tg_data);
-            
-            if (isset($tg_data['user'])) {
-                $user = json_decode($tg_data['user'], true);
-                $user_id = $user['id'];
+            if (isset($params['tgWebAppData'])) {
+                $data = urldecode($params['tgWebAppData']);
+                parse_str($data, $tg_data);
                 
-                // Проверяем существование пользователя
-                $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
-                
-                if ($result) {
-                    echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
-                } else {
-                    // Если пользователь не найден, создаем запись
-                    $username = $user['username'] ?? '';
-                    $mysql->query("INSERT INTO users (user_id, username) VALUES ('$user_id', '$username')");
-                    echo '<h1 class="main_balance">0₣</h1>';
+                if (isset($tg_data['user'])) {
+                    $user = json_decode($tg_data['user'], true);
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'] ?? '';
                 }
+            }
+        }
+
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+            
+            // Проверяем существование пользователя
+            $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+            
+            if ($result) {
+                echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
             } else {
+                // Если пользователь не найден, создаем запись
+                $username = $_SESSION['username'];
+                $mysql->query("INSERT INTO users (user_id, username) VALUES ('$user_id', '$username')");
                 echo '<h1 class="main_balance">0₣</h1>';
-                echo '<p>Ошибка получения данных пользователя</p>';
             }
         } else {
             echo '<h1 class="main_balance">0₣</h1>';
