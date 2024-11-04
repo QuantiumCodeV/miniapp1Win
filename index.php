@@ -84,18 +84,26 @@
 
         // Если user_id еще не сохранен в сессии
         if (!isset($_SESSION['user_id'])) {
+          echo 'нет user_id в сессии';
+          echo $_SERVER['REQUEST_URI'];
             // Получаем данные из URL
             $url = $_SERVER['REQUEST_URI'];
             $parsed = parse_url($url);
             
             if (isset($parsed['query'])) {
+              echo 'есть query';
+              echo $parsed['query'];
                 parse_str($parsed['query'], $params);
 
                 if (isset($params['tgWebAppData'])) {
+                  echo 'есть tgWebAppData';
+                  echo $params['tgWebAppData'];
                     $data = urldecode($params['tgWebAppData']);
                     parse_str($data, $tg_data);
                     
                     if (isset($tg_data['user'])) {
+                      echo 'есть user';
+                      echo $tg_data['user'];
                         $user = json_decode($tg_data['user'], true);
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['username'] = $user['username'] ?? '';
@@ -105,7 +113,7 @@
         }
         else {
             $user_id = $_SESSION['user_id'];
-              
+
             // Проверяем существование пользователя
             $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
             
