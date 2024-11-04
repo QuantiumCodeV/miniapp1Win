@@ -86,7 +86,7 @@ def init_db():
     cursor.close()
     conn.close()
 
-@router.message()
+@dp.message()
 async def handle_incoming_messages(message: Message):
     print(message)
     
