@@ -574,6 +574,7 @@ async def start_command(message: Message):
     
     # Регистрируем пользователя
     register_user(message.from_user.id, message.from_user.username, referrer_id)
+
     
     user_data = get_user_data(message.from_user.id)
     
@@ -629,6 +630,11 @@ def register_user(user_id: int, username: str, referrer_id: int = None):
                             balance = balance + %s,
                             zadanie_5 = 1
                         WHERE user_id = %s''', (bonus, referrer_id))
+            bot.send_message(
+                referrer_id,
+                f"🎉 У вас новый приглашенный пользователь!\n"
+                f"💰 Вам начислен бонус {bonus}₣"
+            )
     
     conn.commit()
     conn.close()
