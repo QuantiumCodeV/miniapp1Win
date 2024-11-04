@@ -170,8 +170,8 @@ $tasks = $tasks_result->fetch_assoc();
             <li class="navigations_item navigations_item_active">
               <a href="tasks.php">Задания</a>
             </li>
-            <li class="navigations_item"><a href="friends.html">Друзья</a></li>
-            <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
+            <li class="navigations_item"><a href="friends.php">Друзья</a></li>
+            <li class="navigations_item"><a href="wallet.php">Кошелек</a></li>
           </ul>
         </div>
       </div>

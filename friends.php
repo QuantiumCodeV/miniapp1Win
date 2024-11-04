@@ -1,3 +1,12 @@
+<?php
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once "backend/config.php";
+
+// Получаем статус заданий пользователя
+$user_id = $_COOKIE['user_id'];
+?>
 <!DOCTYPE html>
 <html lang="ru" class="">
   <head>
@@ -53,8 +62,8 @@
       <ul class="navigations_items">
         <li class="navigations_item"><a href="index.php">Главная</a></li>
         <li class="navigations_item"><a href="tasks.php">Задания</a></li>
-        <li class="navigations_item navigations_item_active"><a href="friends.html">Друзья</a></li>
-        <li class="navigations_item"><a href="wallet.html">Кошелек</a></li>
+        <li class="navigations_item navigations_item_active"><a href="friends.php">Друзья</a></li>
+        <li class="navigations_item"><a href="wallet.php">Кошелек</a></li>
       </ul>
     </div>
   </div>
