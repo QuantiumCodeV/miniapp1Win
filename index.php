@@ -96,6 +96,9 @@
             echo json_encode($data);
           }
         }
+        else{
+          echo json_encode($data);
+        }
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
         <div class="main_buttons">
