@@ -83,28 +83,26 @@
         include "backend/config.php";
 
         // Если user_id еще не сохранен в сессии
-        if (!isset($_SESSION['user_id'])) {
-            $user_id = $_GET['user_id'];
-            $_SESSION['user_id'] = $user_id;
-            echo json_encode($_SESSION);
-
+        if (!isset($_COOKIE['user_id'])) {
+          $user_id = $_GET['user_id'];
+          $_COOKIE['user_id'] = $user_id;
         }
 
-        if (isset($_SESSION['user_id'])) {
-            $user_id = $_SESSION['user_id'];
+        if (isset($_COOKIE['user_id'])) {
+          $user_id = $_COOKIE['user_id'];
 
-            // Проверяем существование пользователя
-            $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
-            
-            if ($result) {
-                echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
-            } else {
-                // Если пользователь не найден, создаем запись
-                $mysql->query("INSERT INTO users (user_id) VALUES ('$user_id')");
-                echo '<h1 class="main_balance">0₣</h1>';
-            }
-        } else {
+          // Проверяем существование пользователя
+          $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+
+          if ($result) {
+            echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
+          } else {
+            // Если пользователь не найден, создаем запись
+            $mysql->query("INSERT INTO users (user_id) VALUES ('$user_id')");
             echo '<h1 class="main_balance">0₣</h1>';
+          }
+        } else {
+          echo '<h1 class="main_balance">0₣</h1>';
         }
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
