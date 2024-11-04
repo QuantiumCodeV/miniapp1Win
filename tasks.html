@@ -1,3 +1,19 @@
+<?php
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once "backend/config.php";
+
+// Получаем ссылки из БД
+$links_result = $mysql->query("SELECT * FROM links");
+$links = $links_result->fetch_assoc();
+
+// Получаем статус заданий пользователя
+$user_id = $_COOKIE['user_id'];
+$tasks_result = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'");
+$tasks = $tasks_result->fetch_assoc();
+?>
+
 <!DOCTYPE html>
 <html lang="ru" class="">
   <head>
@@ -7,22 +23,12 @@
     <meta name="Description" content="" />
 
     <link rel="icon" href="favicon.ico" />
-
     <link rel="stylesheet" href="assets/css/style.css" />
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"
-      rel="stylesheet"
-    />
-
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet"/>
+    
     <script src="assets/js/jquery-3.6.3.js"></script>
-    <script src="assets/js/jquery-ui.min.js"></script>
-    <script
-      type="text/javascript"
-      src="//code.jquery.com/jquery-migrate-1.2.1.min.js"
-    ></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <title>Miniapp</title>
@@ -33,197 +39,91 @@
         <img src="./assets/img/tasks_image.svg" alt="" class="tasks_image" />
         <h1 class="tasks_tittle">ВЫПОЛНЕНИЕ ЗАДАНИЙ</h1>
         <div class="tasks_items">
-          <div
-            class="tasks_item"
-            id="channel1"
-            onclick="successSubscription('zadanie_1')"
-          >
+          <div class="tasks_item" id="channel1" onclick="successSubscription('zadanie_1')">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Подписаться на первый канал</p>
-              <p class="tasks_item_price" id="channel1_price">1000₣</p>
-              <img
-                id="channel1_accept"
-                src="./assets/img/tasks_accept.svg"
-                alt=""
-                class="tasks_item_accept"
-                style="display: none"
-              />
+              <p class="tasks_item_price" <?php if($tasks['zadanie_1'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
+              <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept" 
+                <?php if($tasks['zadanie_1'] != '1') echo 'style="display:none"'; ?>
+                data-link="<?php echo $links['first_channel']; ?>" />
             </div>
           </div>
-          <div
-            class="tasks_item"
-            id="channel2"
-            onclick="successSubscription('zadanie_2')"
-          >
+
+          <div class="tasks_item" id="channel2" onclick="successSubscription('zadanie_2')">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Подписаться на второй канал</p>
-              <p class="tasks_item_price" id="channel2_price">1000₣</p>
-              <img
-                id="channel2_accept"
-                src="./assets/img/tasks_accept.svg"
-                alt=""
-                style="display: none"
-                class="tasks_item_accept"
-              />
+              <p class="tasks_item_price" <?php if($tasks['zadanie_2'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
+              <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
+                <?php if($tasks['zadanie_2'] != '1') echo 'style="display:none"'; ?>
+                data-link="<?php echo $links['second_channel']; ?>" />
             </div>
           </div>
-          <div class="tasks_item" id="1win">
+
+          <div class="tasks_item" id="1win" onclick="window.location.href='<?php echo $links['win_link']; ?>'">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Регистрация на сайте</p>
-              <p class="tasks_item_price" id="1win_price">1000₣</p>
-              <img
-                id="1win_accept"
-                src="./assets/img/tasks_accept.svg"
-                alt=""
-                class="tasks_item_accept"
-                style="display: none"
-              />
+              <p class="tasks_item_price" <?php if($tasks['zadanie_3'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
+              <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
+                <?php if($tasks['zadanie_3'] != '1') echo 'style="display:none"'; ?> />
             </div>
           </div>
+
           <div class="tasks_item" id="deposit">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Сделать депозит</p>
-              <p class="tasks_item_price" id="deposit_price">3000₣</p>
-              <img
-                id="deposit_accept"
-                src="./assets/img/tasks_accept.svg"
-                alt=""
-                class="tasks_item_accept"
-                style="display: none"
-              />
+              <p class="tasks_item_price" <?php if($tasks['zadanie_4'] == '1') echo 'style="display:none"'; ?>>3000₣</p>
+              <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
+                <?php if($tasks['zadanie_4'] != '1') echo 'style="display:none"'; ?> />
             </div>
           </div>
+
           <div class="tasks_item" id="invite">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Пригласить друга</p>
-              <p class="tasks_item_price" id="invite_price">1000₣</p>
-              <img
-                id="invite_accept"
-                src="./assets/img/tasks_accept.svg"
-                alt=""
-                class="tasks_item_accept"
-                style="display: none"
-              />
+              <p class="tasks_item_price" <?php if($tasks['zadanie_5'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
+              <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
+                <?php if($tasks['zadanie_5'] != '1') echo 'style="display:none"'; ?> />
             </div>
           </div>
+
           <script>
-            function getLinks() {
-              $.ajax({
-                url: "/backend/get_links.php",
-                method: "POST",
-                success: function (response) {
-                  console.log(response);
-                  var responseJSON = JSON.parse(response);
-                  console.log(responseJSON);
-
-                  $("#channel1")
-                    .find(".tasks_item_accept")
-                    .attr("data-link", responseJSON.first_channel);
-                  $("#channel1").click(function () {
-                    window.location.href = responseJSON.first_channel;
-                  });
-                  $("#channel2")
-                    .find(".tasks_item_accept")
-                    .attr("data-link", responseJSON.second_channel);
-                  $("#channel2").click(function () {
-                    window.location.href = responseJSON.second_channel;
-                  });
-                  $("#1win")
-                    .find(".tasks_item_accept")
-                    .attr("data-link", responseJSON.win_link);
-                  $("#1win").click(function () {
-                    window.location.href = responseJSON.win_link;
-                  });
-                },
-              });
-            }
-
             function successSubscription(zadanie) {
               $.ajax({
                 url: "/backend/success_subscriptions.php",
-                method: "POST",
+                method: "POST", 
                 data: {
                   user_id: localStorage.getItem("user_id"),
-                  zadanie: zadanie,
+                  zadanie: zadanie
                 },
-                success: function (response) {
-                  console.log(response);
+                success: function(response) {
                   var responseJSON = JSON.parse(response);
-                  if (responseJSON.success) {
-                    if (zadanie == "zadanie_1") {
-                      window.location.href = $("#channel1")
-                        .find(".tasks_item_accept")
-                        .attr("data-link");
+                  if(responseJSON.success) {
+                    if(zadanie == "zadanie_1") {
+                      window.location.href = $("#channel1").find(".tasks_item_accept").attr("data-link");
                     }
-                    if (zadanie == "zadanie_2") {
-                      window.location.href = $("#channel2")
-                        .find(".tasks_item_accept")
-                        .attr("data-link");
+                    if(zadanie == "zadanie_2") {
+                      window.location.href = $("#channel2").find(".tasks_item_accept").attr("data-link");
                     }
                   }
-                },
+                }
               });
             }
-
-            function getSuccessTasks() {
-              $.ajax({
-                url: "/backend/get_success_tasks.php",
-                method: "POST",
-                data: { user_id: localStorage.getItem("user_id") },
-                success: function (response) {
-                  console.log(response);
-                  var responseJSON = JSON.parse(response);
-                  console.log(responseJSON);
-
-                  if (responseJSON.zadanie_1 == "1") {
-                    $("#channel1").find(".tasks_item_accept").show();
-                    $("#channel1").find(".tasks_item_price").hide();
-                  }
-                  if (responseJSON.zadanie_2 == "1") {
-                    $("#channel2").find(".tasks_item_accept").show();
-                    $("#channel2").find(".tasks_item_price").hide();
-                  }
-                  if (responseJSON.zadanie_3 == "1") {
-                    $("#1win").find(".tasks_item_accept").show();
-                    $("#1win").find(".tasks_item_price").hide();
-                  }
-                  if (responseJSON.zadanie_4 == "1") {
-                    $("#deposit").find(".tasks_item_accept").show();
-                    $("#deposit").find(".tasks_item_price").hide();
-                  }
-                  if (responseJSON.zadanie_5 == "1") {
-                    $("#invite").find(".tasks_item_accept").show();
-                    $("#invite").find(".tasks_item_price").hide();
-                  }
-                },
-              });
-            }
-
-            getLinks();
-            getSuccessTasks();
           </script>
         </div>
+
         <div class="tasks_promocode">
           <p class="tasks_promocode_tittle">Promocode</p>
-          <input
-            type="text"
-            placeholder="Enter poromocode"
-            class="tasks_promocode_input"
-          />
+          <input type="text" placeholder="Enter poromocode" class="tasks_promocode_input"/>
           <p class="tasks_promocode_error" style="display: none"></p>
           <p class="tasks_promocode_success" style="display: none"></p>
 
-          <button class="tasks_promocode_button" onclick="activatePromo()">
-            Применить
-          </button>
+          <button class="tasks_promocode_button" onclick="activatePromo()">Применить</button>
 
           <script>
             async function activatePromo() {
-              let promoCode = document.querySelector(
-                ".tasks_promocode_input"
-              ).value;
+              let promoCode = document.querySelector(".tasks_promocode_input").value;
 
-              if (promoCode == "") {
+              if(promoCode == "") {
                 $(".tasks_promocode_error").text("Введите промокод").show();
                 $(".tasks_promocode_success").hide();
                 setTimeout(() => {
@@ -237,27 +137,24 @@
                 method: "POST",
                 data: {
                   promo: promoCode,
-                  user_id: localStorage.getItem("user_id"),
+                  user_id: localStorage.getItem("user_id")
                 },
-                success: function (response) {
-                  console.log(response);
+                success: function(response) {
                   var responseJSON = JSON.parse(response);
-                  if (responseJSON.error) {
+                  if(responseJSON.error) {
                     $(".tasks_promocode_error").text(responseJSON.error).show();
                     $(".tasks_promocode_success").hide();
                     setTimeout(() => {
                       $(".tasks_promocode_error").hide();
                     }, 3000);
                   } else {
-                    $(".tasks_promocode_success")
-                      .text(responseJSON.success)
-                      .show();
+                    $(".tasks_promocode_success").text(responseJSON.success).show();
                     $(".tasks_promocode_error").hide();
                     setTimeout(() => {
                       $(".tasks_promocode_success").hide();
                     }, 3000);
                   }
-                },
+                }
               });
             }
           </script>
