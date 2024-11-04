@@ -116,7 +116,7 @@
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
         <div class="main_buttons">
-          <a class="main_button" id="inviteBtn" href="https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>">Пригласить друзей</a>
+          <a class="main_button" id="inviteBtn" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Присоединяйся к нашему боту и получи бонус!">Пригласить друзей</a>
           <img src="./assets/img/copy.svg" alt="" class="main_copy" id="copyBtn" onclick="copyLink()">
         </div>
       </div>
