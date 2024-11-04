@@ -89,7 +89,8 @@
             // Получаем данные из URL
             $url = $_SERVER['QUERY_STRING'];
             $parsed = parse_url($url);
-            
+            echo $url;
+            echo $parsed;
             if (isset($parsed['query'])) {
               echo 'есть query';
               echo $parsed['query'];
