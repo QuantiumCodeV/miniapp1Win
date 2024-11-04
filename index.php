@@ -80,7 +80,8 @@ if (!isset($_COOKIE['user_id'])) {
             line-height: normal;
             padding: 16px 50px;
             border-radius: 15px;
-            background: #00a6d3;
+            background: #00c9ff;
+            margin-top: 20px;
           }
         </style>
       </div>
