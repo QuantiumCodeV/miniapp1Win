@@ -4,18 +4,18 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
 
-// Получаем ссылки из БД
+// Obtenir les liens de la base de données
 $links_result = $mysql->query("SELECT * FROM links");
 $links = $links_result->fetch_assoc();
 
-// Получаем статус заданий пользователя
+// Obtenir le statut des tâches de l'utilisateur
 $user_id = $_COOKIE['user_id'];
 $tasks_result = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'");
 $tasks = $tasks_result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
-<html lang="ru" class="">
+<html lang="fr" class="">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -37,11 +37,11 @@ $tasks = $tasks_result->fetch_assoc();
     <section class="main">
       <div class="container">
         <img src="./assets/img/tasks_image.svg" alt="" class="tasks_image" />
-        <h1 class="tasks_tittle">ВЫПОЛНЕНИЕ ЗАДАНИЙ</h1>
+        <h1 class="tasks_tittle">RÉALISATION DES TÂCHES</h1>
         <div class="tasks_items">
           <div class="tasks_item" id="channel1" onclick="successSubscription('zadanie_1')">
             <div class="tasks_item_content">
-              <p class="tasks_item_tittle">Подписаться на первый канал</p>
+              <p class="tasks_item_tittle">S'abonner à la première chaîne</p>
               <p class="tasks_item_price" <?php if($tasks['zadanie_1'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
               <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept" 
                 <?php if($tasks['zadanie_1'] != '1') echo 'style="display:none"'; ?>
@@ -51,7 +51,7 @@ $tasks = $tasks_result->fetch_assoc();
 
           <div class="tasks_item" id="channel2" onclick="successSubscription('zadanie_2')">
             <div class="tasks_item_content">
-              <p class="tasks_item_tittle">Подписаться на второй канал</p>
+              <p class="tasks_item_tittle">S'abonner à la deuxième chaîne</p>
               <p class="tasks_item_price" <?php if($tasks['zadanie_2'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
               <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
                 <?php if($tasks['zadanie_2'] != '1') echo 'style="display:none"'; ?>
@@ -61,7 +61,7 @@ $tasks = $tasks_result->fetch_assoc();
 
           <div class="tasks_item" id="1win" onclick="window.location.href='<?php echo $links['win_link']; ?>'">
             <div class="tasks_item_content">
-              <p class="tasks_item_tittle">Регистрация на сайте</p>
+              <p class="tasks_item_tittle">Inscription sur le site</p>
               <p class="tasks_item_price" <?php if($tasks['zadanie_3'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
               <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
                 <?php if($tasks['zadanie_3'] != '1') echo 'style="display:none"'; ?> />
@@ -70,7 +70,7 @@ $tasks = $tasks_result->fetch_assoc();
 
           <div class="tasks_item" id="deposit">
             <div class="tasks_item_content">
-              <p class="tasks_item_tittle">Сделать депозит</p>
+              <p class="tasks_item_tittle">Faire un dépôt</p>
               <p class="tasks_item_price" <?php if($tasks['zadanie_4'] == '1') echo 'style="display:none"'; ?>>3000₣</p>
               <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
                 <?php if($tasks['zadanie_4'] != '1') echo 'style="display:none"'; ?> />
@@ -79,7 +79,7 @@ $tasks = $tasks_result->fetch_assoc();
 
           <div class="tasks_item" id="invite">
             <div class="tasks_item_content">
-              <p class="tasks_item_tittle">Пригласить друга</p>
+              <p class="tasks_item_tittle">Inviter un ami</p>
               <p class="tasks_item_price" <?php if($tasks['zadanie_5'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
               <img src="./assets/img/tasks_accept.svg" alt="" class="tasks_item_accept"
                 <?php if($tasks['zadanie_5'] != '1') echo 'style="display:none"'; ?> />
@@ -112,19 +112,19 @@ $tasks = $tasks_result->fetch_assoc();
         </div>
 
         <div class="tasks_promocode">
-          <p class="tasks_promocode_tittle">Promocode</p>
-          <input type="text" placeholder="Enter poromocode" class="tasks_promocode_input"/>
+          <p class="tasks_promocode_tittle">Code promo</p>
+          <input type="text" placeholder="Entrez le code promo" class="tasks_promocode_input"/>
           <p class="tasks_promocode_error" style="display: none"></p>
           <p class="tasks_promocode_success" style="display: none"></p>
 
-          <button class="tasks_promocode_button" onclick="activatePromo()">Применить</button>
+          <button class="tasks_promocode_button" onclick="activatePromo()">Appliquer</button>
 
           <script>
             async function activatePromo() {
               let promoCode = document.querySelector(".tasks_promocode_input").value;
 
               if(promoCode == "") {
-                $(".tasks_promocode_error").text("Введите промокод").show();
+                $(".tasks_promocode_error").text("Entrez le code promo").show();
                 $(".tasks_promocode_success").hide();
                 setTimeout(() => {
                   $(".tasks_promocode_error").hide();
@@ -166,27 +166,27 @@ $tasks = $tasks_result->fetch_assoc();
       <div class="navigations">
         <div class="navigations_content">
           <ul class="navigations_items">
-            <li class="navigations_item"><a href="index.php">Главная</a></li>
+            <li class="navigations_item"><a href="index.php">Accueil</a></li>
             <li class="navigations_item navigations_item_active">
-              <a href="tasks.php">Задания</a>
+              <a href="tasks.php">Tâches</a>
             </li>
-            <li class="navigations_item"><a href="friends.php">Друзья</a></li>
-            <li class="navigations_item"><a href="wallet.php">Кошелек</a></li>
+            <li class="navigations_item"><a href="friends.php">Amis</a></li>
+            <li class="navigations_item"><a href="wallet.php">Portefeuille</a></li>
           </ul>
         </div>
       </div>
     </section>
 
     <script>
-      // Инициализация Telegram WebApp
+      // Initialisation de Telegram WebApp
       let tg = window.Telegram.WebApp;
       tg.expand();
 
-      // Получаем данные пользователя из Telegram
+      // Obtenir les données utilisateur de Telegram
       let user = tg.initDataUnsafe.user;
-      console.log("ID пользователя:", user.id);
-      console.log("Имя пользователя:", user.first_name);
-      console.log("Юзернейм:", user.username);
+      console.log("ID utilisateur:", user.id);
+      console.log("Prénom:", user.first_name);
+      console.log("Nom d'utilisateur:", user.username);
     </script>
 
     <script src="assets/js/script.js"></script>

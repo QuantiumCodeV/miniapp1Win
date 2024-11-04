@@ -1,15 +1,15 @@
 <?php
-// Start session before any output
+// Démarrer la session avant toute sortie
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
-// Если user_id еще не сохранен в куки 
+// Si user_id n'est pas encore enregistré dans les cookies
 if (!isset($_COOKIE['user_id'])) {
   $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
   if ($user_id) {
-    // Устанавливаем куки
-    setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
+    // Définir le cookie
+    setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie pour 30 jours
     $user_id = $_GET['user_id'];
   }
 } else {
@@ -17,7 +17,7 @@ if (!isset($_COOKIE['user_id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="ru" class="">
+<html lang="fr" class="">
 
 <head>
   <meta charset="UTF-8" />
@@ -40,7 +40,7 @@ if (!isset($_COOKIE['user_id'])) {
     src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <title>Miniapp</title>
+  <title>Mini-application</title>
 </head>
 
 <body>
@@ -50,21 +50,21 @@ if (!isset($_COOKIE['user_id'])) {
     <div class="modal_gift_rect">
       <img src="./assets/img/close.svg" alt="" class="modal_close" id="modal_close">
       <div class="modal_gift_rect_content">
-        <p class="modal_gift_tittle">Бонус за приглашения</p>
+        <p class="modal_gift_tittle">Bonus pour les invitations</p>
         <ul class="modal_gift_texts">
-          <li class="modal_gift_text"><span>3000 ₣</span> за <span>10</span> приглашенных друзей</li>
-          <li class="modal_gift_text"><span>6000 ₣</span> за <span>20</span> приглашенных друзей</li>
-          <li class="modal_gift_text"><span>15000₣</span> за <span>40</span> приглашенных друзей</li>
+          <li class="modal_gift_text"><span>3000 ₣</span> pour <span>10</span> amis invités</li>
+          <li class="modal_gift_text"><span>6000 ₣</span> pour <span>20</span> amis invités</li>
+          <li class="modal_gift_text"><span>15000₣</span> pour <span>40</span> amis invités</li>
         </ul>
-        <p class="modal_gift_subtittle">Выпускайте видеоролики с нашим ботом и получайте дополнительные призы</p>
+        <p class="modal_gift_subtittle">Publiez des vidéos avec notre bot et recevez des prix supplémentaires</p>
         <ul class="modal_gift_videos">
-          <li class="modal_gift_video"><span>5000₣</span> если ваше видео набрало 1000 просмотров</li>
-          <li class="modal_gift_video"><span>20000₣</span> если ваше видео набрало более 5 тысяч просмотров</li>
-          <li class="modal_gift_video"><span>100 000₣</span> если ваше видео набрало более 20 тысяч просмотров</li>
+          <li class="modal_gift_video"><span>5000₣</span> si votre vidéo atteint 1000 vues</li>
+          <li class="modal_gift_video"><span>20000₣</span> si votre vidéo atteint plus de 5 mille vues</li>
+          <li class="modal_gift_video"><span>100 000₣</span> si votre vidéo atteint plus de 20 mille vues</li>
         </ul>
-        <p class="modal_gift_video_text">Для получения вознаграждения, пришлите ссылку вашего аккаунта и скриншот где видно сколько ваше видео набрало просмотров"
+        <p class="modal_gift_video_text">Pour recevoir votre récompense, envoyez le lien de votre compte et une capture d'écran montrant le nombre de vues de votre vidéo"
         </p>
-        <a class="modal_gift_button" href="https://t.me/support_bot">Поддержка</a>
+        <a class="modal_gift_button" href="https://t.me/support_bot">Support</a>
         <style>
           .modal_gift_button {
             color: #fff;
@@ -93,17 +93,17 @@ if (!isset($_COOKIE['user_id'])) {
     <div class="modal_help_rect">
       <img src="./assets/img/close.svg" alt="" class="modal_close" id="modal_close">
       <div class="modal_gift_rect_content">
-        <p class="modal_help_rect_tittle">Этот бот создан для того, чтобы помочь вам зарабатывать, приглашая своих друзей. Заработок в системе основан на простой и понятной модели: чем больше людей вы пригласите, тем больше вы сможете заработать.
+        <p class="modal_help_rect_tittle">Ce bot est créé pour vous aider à gagner de l'argent en invitant vos amis. Les gains dans le système sont basés sur un modèle simple et compréhensible : plus vous invitez de personnes, plus vous pouvez gagner.
         </p>
-        <p class="modal_help_rect_subtittle"><span>1</span> приглашенный друг = <span>N сумма</span> (зависит от уровня пользователя)</p>
+        <p class="modal_help_rect_subtittle"><span>1</span> ami invité = <span>N montant</span> (dépend du niveau de l'utilisateur)</p>
         <ul class="modal_help_rect_items">
-          <li class="modal_help_rect_item_text"><span>1</span> уровень - базовый уровень дается с самого начала</li>
-          <li class="modal_help_rect_item_text"><span>2</span> уровень за <span>1</span> друга дается <span>2000₣</span></li>
-          <li class="modal_help_rect_item_text"><span>3</span> уровень за <span>1</span> друга дается <span>5000₣</span></li>
-          <li class="modal_help_rect_item_text"><span>4</span> уровень за <span>1</span> друга дается <span>6000₣</span></li>
-          <li class="modal_help_rect_item_text"><span>5</span> уровень за <span>1</span> друга дается <span>10000₣</span></li>
+          <li class="modal_help_rect_item_text"><span>1</span> niveau - niveau de base donné dès le début</li>
+          <li class="modal_help_rect_item_text"><span>2</span> niveau pour <span>1</span> ami donne <span>2000₣</span></li>
+          <li class="modal_help_rect_item_text"><span>3</span> niveau pour <span>1</span> ami donne <span>5000₣</span></li>
+          <li class="modal_help_rect_item_text"><span>4</span> niveau pour <span>1</span> ami donne <span>6000₣</span></li>
+          <li class="modal_help_rect_item_text"><span>5</span> niveau pour <span>1</span> ami donne <span>10000₣</span></li>
         </ul>
-        <p class="modal_help_rect_bottom">Но создается вопрос, откуда берутся деньги? Ответ: Все выплаты происходят за счет наших партнеров, которые спонсируют проект, что делает его устойчивым и надежным.</p>
+        <p class="modal_help_rect_bottom">Mais la question se pose, d'où vient l'argent ? Réponse : Tous les paiements sont effectués par nos partenaires qui sponsorisent le projet, ce qui le rend stable et fiable.</p>
       </div>
     </div>
   </div>
@@ -112,23 +112,21 @@ if (!isset($_COOKIE['user_id'])) {
     <div class="container">
       <img src="./assets/img/help.svg" alt="" class="main_help" id="openhelp">
       <div class="main_center">
-        <h2 class="main_tittle">ВАШ БАЛАНС</h2>
+        <h2 class="main_tittle">VOTRE SOLDE</h2>
         <?php
-
-
-        // Проверяем наличие куки
+        // Vérifier la présence du cookie
         if (isset($user_id)) {
 
-          // Защита от SQL-инъекций
+          // Protection contre les injections SQL
           $user_id = $mysql->real_escape_string($user_id);
 
-          // Проверяем существование пользователя
+          // Vérifier l'existence de l'utilisateur
           $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
 
           if ($result) {
             echo '<h1 class="main_balance">' . htmlspecialchars($result['balance']) . '₣</h1>';
           } else {
-            // Если пользователь не найден, создаем запись
+            // Si l'utilisateur n'est pas trouvé, créer une entrée
             $mysql->query("INSERT INTO users (user_id) VALUES ('$user_id')");
             echo '<h1 class="main_balance">0₣</h1>';
           }
@@ -136,9 +134,9 @@ if (!isset($_COOKIE['user_id'])) {
           echo '<h1 class="main_balance">0₣</h1>';
         }
         ?>
-        <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
+        <h3 class="main_sutittle">Invitez des amis et recevez 1000₣ pour chaque ami</h3>
         <div class="main_buttons">
-          <a class="main_button" id="inviteBtn" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Присоединяйся по моей ссылке и получи бонус 1000₣ на старте! 🔥">Пригласить друзей</a>
+          <a class="main_button" id="inviteBtn" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Rejoignez avec mon lien et obtenez un bonus de démarrage de 1000₣! 🔥">Inviter des amis</a>
           <img src="./assets/img/copy.svg" alt="" class="main_copy" id="copyBtn" onclick="copyLink()">
         </div>
       </div>
@@ -150,25 +148,25 @@ if (!isset($_COOKIE['user_id'])) {
     <div class="navigations">
       <div class="navigations_content">
         <ul class="navigations_items">
-          <li class="navigations_item navigations_item_active"><a href="index.php">Главная</a></li>
-          <li class="navigations_item"><a href="tasks.php">Задания</a></li>
-          <li class="navigations_item"><a href="friends.php">Друзья</a></li>
-          <li class="navigations_item"><a href="wallet.php">Кошелек</a></li>
+          <li class="navigations_item navigations_item_active"><a href="index.php">Accueil</a></li>
+          <li class="navigations_item"><a href="tasks.php">Tâches</a></li>
+          <li class="navigations_item"><a href="friends.php">Amis</a></li>
+          <li class="navigations_item"><a href="wallet.php">Portefeuille</a></li>
         </ul>
       </div>
     </div>
   </section>
 
   <script>
-    // Инициализация Telegram WebApp
+    // Initialisation de Telegram WebApp
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Получаем данные пользователя из Telegram
+    // Obtenir les données de l'utilisateur de Telegram
     let user = tg.initDataUnsafe.user;
-    console.log('ID пользователя:', user.id);
-    console.log('Имя пользователя:', user.first_name);
-    console.log('Юзернейм:', user.username);
+    console.log('ID utilisateur:', user.id);
+    console.log('Nom utilisateur:', user.first_name);
+    console.log('Nom d\'utilisateur:', user.username);
     localStorage.setItem('user_id', user.id);
 
     function copyLink() {

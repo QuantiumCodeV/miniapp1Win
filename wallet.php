@@ -4,14 +4,14 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
 
-// Получаем статус заданий пользователя
+// Obtenir le statut des tâches de l'utilisateur
 $user_id = $_COOKIE['user_id'];
 $tasks_result = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'");
 $tasks = $tasks_result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
-<html lang="ru" class="">
+<html lang="fr" class="">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -37,22 +37,22 @@ $tasks = $tasks_result->fetch_assoc();
   <div class="container">
     <div class="wallet_main">
       <img src="./assets/img/withdraw_image.svg" alt="" class="wallet_image">
-      <h1 class="wallet_tittle">ВЫВОД СРЕДСТВ</h1>
+      <h1 class="wallet_tittle">RETRAIT DES FONDS</h1>
       <p class="wallet_info">
         <?php
         if ($tasks['zadanie_1'] != '1' || $tasks['zadanie_2'] != '1') {
-          echo 'Для вывода необходимо выполнить <span>2 задания</span> с подпиской';
+          echo 'Pour retirer, vous devez compléter <span>2 tâches</span> avec abonnement';
         } else if ($tasks['zadanie_3'] == '0') {
-          echo 'Для вывода необходимо выполнить регистрацию на сайте';
+          echo 'Pour retirer, vous devez vous inscrire sur le site';
         } else if ($tasks['zadanie_4'] == '0') {
-          echo 'Для вывода необходимо сделать первый депозит';
+          echo 'Pour retirer, vous devez faire votre premier dépôt';
         } else if ($tasks['zadanie_5'] == '0') {
-          echo 'Для вывода необходимо пригласить 1 друга';
+          echo 'Pour retirer, vous devez inviter 1 ami';
         }
         ?>
       </p>
       <div class="main_buttons">
-        <button class="main_button" onclick="window.location.href='tasks.php'">Перейти к выполнению</button>
+        <button class="main_button" onclick="window.location.href='tasks.php'">Aller aux tâches</button>
       </div>
     </div>
   </div>
@@ -62,25 +62,25 @@ $tasks = $tasks_result->fetch_assoc();
   <div class="navigations">
     <div class="navigations_content">
       <ul class="navigations_items">
-        <li class="navigations_item"><a href="index.php">Главная</a></li>
-        <li class="navigations_item"><a href="tasks.php">Задания</a></li>
-        <li class="navigations_item"><a href="friends.php">Друзья</a></li>
-        <li class="navigations_item navigations_item_active"><a href="wallet.php">Кошелек</a></li>
+        <li class="navigations_item"><a href="index.php">Accueil</a></li>
+        <li class="navigations_item"><a href="tasks.php">Tâches</a></li>
+        <li class="navigations_item"><a href="friends.php">Amis</a></li>
+        <li class="navigations_item navigations_item_active"><a href="wallet.php">Portefeuille</a></li>
       </ul>
     </div>
   </div>
 </section>
 
     <script>
-      // Инициализация Telegram WebApp
+      // Initialisation de Telegram WebApp
       let tg = window.Telegram.WebApp;
       tg.expand();
       
-      // Получаем данные пользователя из Telegram
+      // Obtenir les données utilisateur de Telegram
       let user = tg.initDataUnsafe.user;
-      console.log('ID пользователя:', user.id);
-      console.log('Имя пользователя:', user.first_name);
-      console.log('Юзернейм:', user.username);
+      console.log('ID utilisateur:', user.id);
+      console.log('Prénom:', user.first_name);
+      console.log('Nom d\'utilisateur:', user.username);
     </script>
     
     <script src="assets/js/script.js"></script>

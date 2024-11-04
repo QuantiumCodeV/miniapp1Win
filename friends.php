@@ -4,10 +4,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
 
-// Получаем статус заданий пользователя
+// Obtenir le statut des tâches de l'utilisateur
 $user_id = $_COOKIE['user_id'];
 
-// Получаем друзей из базы данных
+// Obtenir les amis de la base de données
 $result = $mysql->query("SELECT * FROM users WHERE referrer_id = '$user_id'");
 $friends = array();
 $level2 = 0;
@@ -37,7 +37,7 @@ while ($row = $result->fetch_assoc()) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="ru" class="">
+<html lang="fr" class="">
 
 <head>
   <meta charset="UTF-8" />
@@ -69,16 +69,16 @@ while ($row = $result->fetch_assoc()) {
     <div class="container">
       <div class="friends_main">
         <img src="./assets/img/friends_image.svg" alt="" class="friends_image">
-        <h1 class="friends_tittle">ПРИГЛАСИТЕ ДРУЗЕЙ</h1>
-        <p class="friends_info">ВСЕГО ВЫ ПРИГЛАСИЛИ: <br> <span id="friendsTotal"><?php echo $total; ?> ДРУЗЕЙ</span> </p>
+        <h1 class="friends_tittle">INVITEZ VOS AMIS</h1>
+        <p class="friends_info">TOTAL DES INVITATIONS: <br> <span id="friendsTotal"><?php echo $total; ?> AMIS</span> </p>
         <div class="friends_items">
-          <p class="friends_item">ДРУЗЬЯ <span>2</span> УРОВНЯ: <span id="friends2"><?php echo $level2; ?></span></p>
-          <p class="friends_item">ДРУЗЬЯ <span>3</span> УРОВНЯ: <span id="friends3"><?php echo $level3; ?></span></p>
-          <p class="friends_item">ДРУЗЬЯ <span>4</span> УРОВНЯ: <span id="friends4"><?php echo $level4; ?></span></p>
-          <p class="friends_item">ДРУЗЬЯ <span>5</span> УРОВНЯ: <span id="friends5"><?php echo $level5; ?></span></p>
+          <p class="friends_item">AMIS NIVEAU <span>2</span>: <span id="friends2"><?php echo $level2; ?></span></p>
+          <p class="friends_item">AMIS NIVEAU <span>3</span>: <span id="friends3"><?php echo $level3; ?></span></p>
+          <p class="friends_item">AMIS NIVEAU <span>4</span>: <span id="friends4"><?php echo $level4; ?></span></p>
+          <p class="friends_item">AMIS NIVEAU <span>5</span>: <span id="friends5"><?php echo $level5; ?></span></p>
         </div>
         <div class="main_buttons">
-          <a class="main_button" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Присоединяйся по моей ссылке и получи бонус 1000₣ на старте! 🔥">Пригласить друзей</a>
+          <a class="main_button" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Rejoignez avec mon lien et obtenez un bonus de 1000₣ au départ! 🔥">Inviter des amis</a>
           <img src="./assets/img/copy.svg" alt="" class="main_copy" onclick="copyLink()">
         </div>
       </div>
@@ -89,10 +89,10 @@ while ($row = $result->fetch_assoc()) {
     <div class="navigations">
       <div class="navigations_content">
         <ul class="navigations_items">
-          <li class="navigations_item"><a href="index.php">Главная</a></li>
-          <li class="navigations_item"><a href="tasks.php">Задания</a></li>
-          <li class="navigations_item navigations_item_active"><a href="friends.php">Друзья</a></li>
-          <li class="navigations_item"><a href="wallet.php">Кошелек</a></li>
+          <li class="navigations_item"><a href="index.php">Accueil</a></li>
+          <li class="navigations_item"><a href="tasks.php">Tâches</a></li>
+          <li class="navigations_item navigations_item_active"><a href="friends.php">Amis</a></li>
+          <li class="navigations_item"><a href="wallet.php">Portefeuille</a></li>
         </ul>
       </div>
     </div>
