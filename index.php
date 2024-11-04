@@ -83,17 +83,27 @@
         // Получаем данные из URL
         $url = $_SERVER['REQUEST_URI'];
         $parsed = parse_url($url);
-        parse_str(ltrim($parsed['fragment'], '#'), $params);
+        parse_str($parsed['query'], $params);
 
         if (isset($params['tgWebAppData'])) {
-            parse_str($params['tgWebAppData'], $data);
-            if (isset($data['user'])) {
-                $user = json_decode(urldecode($data['user']), true);
+            $data = urldecode($params['tgWebAppData']);
+            parse_str($data, $tg_data);
+            
+            if (isset($tg_data['user'])) {
+                $user = json_decode($tg_data['user'], true);
                 $user_id = $user['id'];
-
+                
+                // Проверяем существование пользователя
                 $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
-                echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
-                echo '<p>User ID: ' . $user_id . '</p>';
+                
+                if ($result) {
+                    echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
+                } else {
+                    // Если пользователь не найден, создаем запись
+                    $username = $user['username'] ?? '';
+                    $mysql->query("INSERT INTO users (user_id, username) VALUES ('$user_id', '$username')");
+                    echo '<h1 class="main_balance">0₣</h1>';
+                }
             } else {
                 echo '<h1 class="main_balance">0₣</h1>';
                 echo '<p>Ошибка получения данных пользователя</p>';
