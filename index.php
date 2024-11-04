@@ -12,8 +12,7 @@ if (!isset($_COOKIE['user_id'])) {
     setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
     $user_id = $_GET['user_id'];
   }
-}
-else {
+} else {
   $user_id = $_COOKIE['user_id'];
 }
 ?>
@@ -65,6 +64,25 @@ else {
         </ul>
         <p class="modal_gift_video_text">Для получения вознаграждения, пришлите ссылку вашего аккаунта и скриншот где видно сколько ваше видео набрало просмотров"
         </p>
+        <a class="modal_gift_button" href="https://t.me/support_bot">Поддержка</a>
+        <style>
+          .modal_gift_button {
+            color: #fff;
+            text-align: center;
+            font-family: "Manrope", sans-serif;
+            outline: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.5s;
+            font-size: 25px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            padding: 16px 50px;
+            border-radius: 15px;
+            background: #00a6d3;
+          }
+        </style>
       </div>
     </div>
   </div>
@@ -95,7 +113,7 @@ else {
       <div class="main_center">
         <h2 class="main_tittle">ВАШ БАЛАНС</h2>
         <?php
-        
+
 
         // Проверяем наличие куки
         if (isset($user_id)) {
