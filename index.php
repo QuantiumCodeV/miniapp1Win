@@ -78,7 +78,11 @@
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
         include "backend/config.php";
-        $user_id = $_POST["user_id"];
+        
+        // Получаем данные из WebApp
+        $data = json_decode(file_get_contents('php://input'), true);
+        $user_id = $data['user']['id'];
+        
         $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
         echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
       ?>
