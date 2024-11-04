@@ -4,6 +4,15 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
+// Если user_id еще не сохранен в куки 
+if (!isset($_COOKIE['user_id'])) {
+  $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
+  if ($user_id) {
+    // Устанавливаем куки
+    setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
+    $user_id = $_GET['user_id'];
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru" class="">
@@ -83,15 +92,7 @@ require_once "backend/config.php";
       <div class="main_center">
         <h2 class="main_tittle">ВАШ БАЛАНС</h2>
         <?php
-        // Если user_id еще не сохранен в куки 
-        if (!isset($_COOKIE['user_id'])) {
-          $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
-          if ($user_id) {
-            // Устанавливаем куки
-            setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
-            $user_id = $_GET['user_id'];
-          }
-        }
+        
 
         // Проверяем наличие куки
         if (isset($_COOKIE['user_id'])) {
