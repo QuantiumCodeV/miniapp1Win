@@ -84,36 +84,20 @@
 
         // Если user_id еще не сохранен в сессии
         if (!isset($_SESSION['user_id'])) {
-          echo json_encode($_SERVER);
-          echo 'нет user_id в сессии';
-          echo $_SERVER['QUERY_STRING'];
             // Получаем данные из URL
-            $url = $_SERVER['QUERY_STRING'];
+            $url = $_SERVER['REQUEST_URI'];
             $parsed = parse_url($url);
-            echo $url;
-            echo $parsed;
+            
             if (isset($parsed['query'])) {
-              echo 'есть query';
-              echo $parsed['query'];
                 parse_str($parsed['query'], $params);
-
-                if (isset($params['tgWebAppData'])) {
-                  echo 'есть tgWebAppData';
-                  echo $params['tgWebAppData'];
-                    $data = urldecode($params['tgWebAppData']);
-                    parse_str($data, $tg_data);
-                    
-                    if (isset($tg_data['user'])) {
-                      echo 'есть user';
-                      echo $tg_data['user'];
-                        $user = json_decode($tg_data['user'], true);
-                        $_SESSION['user_id'] = $user['id'];
-                        $_SESSION['username'] = $user['username'] ?? '';
-                    }
+                
+                if (isset($params['user_id'])) {
+                    $_SESSION['user_id'] = $params['user_id'];
                 }
             }
         }
-        else {
+
+        if (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
 
             // Проверяем существование пользователя
@@ -123,10 +107,11 @@
                 echo '<h1 class="main_balance">' . $result['balance'] . '₣</h1>';
             } else {
                 // Если пользователь не найден, создаем запись
-                $username = $_SESSION['username'];
-                $mysql->query("INSERT INTO users (user_id, username) VALUES ('$user_id', '$username')");
+                $mysql->query("INSERT INTO users (user_id) VALUES ('$user_id')");
                 echo '<h1 class="main_balance">0₣</h1>';
             }
+        } else {
+            echo '<h1 class="main_balance">0₣</h1>';
         }
         ?>
         <h3 class="main_sutittle">Приглашайте друзей и получайте 1000₣ за каждого друга</h3>
