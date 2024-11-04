@@ -103,8 +103,7 @@
                 }
             }
         }
-
-        if (isset($_SESSION['user_id'])) {
+        elseif (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
             
             // Проверяем существование пользователя
