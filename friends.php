@@ -6,6 +6,35 @@ require_once "backend/config.php";
 
 // Получаем статус заданий пользователя
 $user_id = $_COOKIE['user_id'];
+
+// Получаем друзей из базы данных
+$result = $mysql->query("SELECT * FROM users WHERE referrer_id = '$user_id'");
+$friends = array();
+$level2 = 0;
+$level3 = 0; 
+$level4 = 0;
+$level5 = 0;
+$total = 0;
+
+while ($row = $result->fetch_assoc()) {
+    $friends[] = $row;
+    $total++;
+    
+    switch($row['level']) {
+        case "2":
+            $level2++;
+            break;
+        case "3":
+            $level3++;
+            break;
+        case "4":
+            $level4++;
+            break;
+        case "5":
+            $level5++;
+            break;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru" class="">
@@ -36,18 +65,17 @@ $user_id = $_COOKIE['user_id'];
 
 <body>
 
-
   <section class="main">
     <div class="container">
       <div class="friends_main">
         <img src="./assets/img/friends_image.svg" alt="" class="friends_image">
         <h1 class="friends_tittle">ПРИГЛАСИТЕ ДРУЗЕЙ</h1>
-        <p class="friends_info">ВСЕГО ВЫ ПРИГЛАСИЛИ: <br> <span id="friendsTotal">0 ДРУЗЕЙ</span> </p>
+        <p class="friends_info">ВСЕГО ВЫ ПРИГЛАСИЛИ: <br> <span id="friendsTotal"><?php echo $total; ?> ДРУЗЕЙ</span> </p>
         <div class="friends_items">
-          <p class="friends_item">ДРУЗЬЯ <span>2</span> УРОВНЯ: <span id="friends2">0</span></p>
-          <p class="friends_item">ДРУЗЬЯ <span>3</span> УРОВНЯ: <span id="friends3">0</span></p>
-          <p class="friends_item">ДРУЗЬЯ <span>4</span> УРОВНЯ: <span id="friends4">0</span></p>
-          <p class="friends_item">ДРУЗЬЯ <span>5</span> УРОВНЯ: <span id="friends5">5</span></p>
+          <p class="friends_item">ДРУЗЬЯ <span>2</span> УРОВНЯ: <span id="friends2"><?php echo $level2; ?></span></p>
+          <p class="friends_item">ДРУЗЬЯ <span>3</span> УРОВНЯ: <span id="friends3"><?php echo $level3; ?></span></p>
+          <p class="friends_item">ДРУЗЬЯ <span>4</span> УРОВНЯ: <span id="friends4"><?php echo $level4; ?></span></p>
+          <p class="friends_item">ДРУЗЬЯ <span>5</span> УРОВНЯ: <span id="friends5"><?php echo $level5; ?></span></p>
         </div>
         <div class="main_buttons">
           <a class="main_button" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Присоединяйся по моей ссылке и получи бонус 1000₣ на старте! 🔥">Пригласить друзей</a>
@@ -70,75 +98,12 @@ $user_id = $_COOKIE['user_id'];
     </div>
   </section>
 
-
   <script>
-    // Инициализация Telegram WebApp
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Получаем данные пользователя из Telegram
-    let user = tg.initDataUnsafe.user;
-    console.log('ID пользователя:', user.id);
-    console.log('Имя пользователя:', user.first_name);
-    console.log('Юзернейм:', user.username);
-
-    function getFriends() {
-      // Проверяем наличие user_id в localStorage
-      const userId = localStorage.getItem('user_id');
-      if (!userId) {
-        console.error('ID пользователя не найден');
-        return;
-      }
-
-      $.ajax({
-        url: "/backend/get_friends.php",
-        method: "POST",
-        data: {
-          user_id: userId
-        },
-        success: function(response) {
-          try {
-            if (!response) {
-              throw new Error('Пустой ответ от сервера');
-            }
-
-            let friends = JSON.parse(response);
-
-            // Подсчет друзей по уровням
-            let level2 = 0,
-              level3 = 0,
-              level4 = 0,
-              level5 = 0;
-
-            friends.forEach(friend => {
-              if (friend.level == "2") level2++;
-              if (friend.level == "3") level3++;
-              if (friend.level == "4") level4++;
-              if (friend.level == "5") level5++;
-            });
-
-            // Обновляем DOM
-            $("#friendsTotal").text(friends.length + " ДРУЗЕЙ");
-            $("#friends2").text(level2);
-            $("#friends3").text(level3);
-            $("#friends4").text(level4);
-            $("#friends5").text(level5);
-
-          } catch (error) {
-            console.error('Ошибка при обработке данных:', error);
-          }
-        },
-        error: function(xhr, status, error) {
-          console.error('Ошибка запроса:', error);
-        }
-      });
-    }
-
-    getFriends();
-
-
     function copyLink() {
-      let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
+      let link = "https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>";
       navigator.clipboard.writeText(link);
     }
   </script>
