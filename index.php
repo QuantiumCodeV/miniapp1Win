@@ -84,6 +84,7 @@
 
         // Если user_id еще не сохранен в сессии
         if (!isset($_SESSION['user_id'])) {
+          echo json_encode($_SERVER);
           echo 'нет user_id в сессии';
           echo $_SERVER['QUERY_STRING'];
             // Получаем данные из URL
