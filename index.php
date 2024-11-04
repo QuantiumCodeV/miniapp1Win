@@ -80,14 +80,15 @@
         ini_set('display_errors', 1);
         include "backend/config.php";
 
-        // Получаем данные из WebApp через window.Telegram.WebApp
-        $headers = getallheaders();
-        $initData = isset($headers['X-Telegram-Init-Data']) ? $headers['X-Telegram-Init-Data'] : '';
+        // Получаем данные из URL
+        $url = $_SERVER['REQUEST_URI'];
+        $parsed = parse_url($url);
+        parse_str(ltrim($parsed['fragment'], '#'), $params);
 
-        if ($initData) {
-            parse_str($initData, $data);
+        if (isset($params['tgWebAppData'])) {
+            parse_str($params['tgWebAppData'], $data);
             if (isset($data['user'])) {
-                $user = json_decode($data['user'], true);
+                $user = json_decode(urldecode($data['user']), true);
                 $user_id = $user['id'];
 
                 $result = $mysql->query("SELECT balance FROM users WHERE user_id = '$user_id'")->fetch_assoc();
@@ -98,7 +99,7 @@
                 echo '<p>Ошибка получения данных пользователя</p>';
             }
         } else {
-            echo '<h1 class="main_balance">0₣</h1>'; 
+            echo '<h1 class="main_balance">0₣</h1>';
             echo '<p>Ошибка инициализации Telegram WebApp</p>';
         }
         ?>
