@@ -1,3 +1,10 @@
+<?php
+// Start session before any output
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once "backend/config.php";
+?>
 <!DOCTYPE html>
 <html lang="ru" class="">
 
@@ -76,21 +83,13 @@
       <div class="main_center">
         <h2 class="main_tittle">ВАШ БАЛАНС</h2>
         <?php
-        // Start session before any output
-        session_start();
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-        require_once "backend/config.php";
-
         // Если user_id еще не сохранен в куки 
         if (!isset($_COOKIE['user_id'])) {
           $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
           if ($user_id) {
             // Устанавливаем куки
             setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie на 30 дней
-            // После установки куки, можно сделать редирект, чтобы обновить страницу
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit; // Завершаем выполнение скрипта
+            $user_id = $_GET['user_id'];
           }
         }
 
