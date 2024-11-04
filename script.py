@@ -566,9 +566,9 @@ async def start_command(message: Message):
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(
         text="Открыть приложение",
-        web_app=WebAppInfo(url="https://miniapp.quantiumcode.online?user_id={message.from_user.id}")
+        web_app=WebAppInfo(url=f"https://miniapp.quantiumcode.online?user_id={message.from_user.id}")
     ))
-    
+
     # Создаем реферальную ссылку
     ref_link = f"https://t.me/fasdfadf_bot?start={message.from_user.id}"
     
