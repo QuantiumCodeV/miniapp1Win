@@ -98,6 +98,7 @@ async def channel_post(message: Message):
         database="miniapp"
     )
     cursor = conn.cursor()
+    
     # Проверяем формат сообщения "1вин:регистрация:код"
     text = message.text
     if text and ":" in text:
@@ -108,6 +109,13 @@ async def channel_post(message: Message):
             # Отправляем ответное сообщение
             response = f"✅ Регистрация подтверждена\nВаш код: {reg_code}"
             await message.answer(response)
+            
+            # Публикуем пост в канал
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=f"🎉 Новая регистрация!\nКод: {reg_code}\n\nПрисоединяйтесь к нам!"
+            )
+            
     cursor.close()
     conn.close()
 
