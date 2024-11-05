@@ -5,18 +5,18 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
 // Si user_id n'est pas encore enregistré dans les cookies
-echo json_encode($_COOKIE);
-if (!isset($_COOKIE['user_id'])) {
+echo json_encode($_SESSION);
+if (!isset($_SESSION['user_id'])) {
   $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
   if ($user_id) {
     // Définir le cookie
-    setcookie('user_id', $user_id, time() + (86400 * 30), "/"); // Cookie pour 30 jours
+    $_SESSION['user_id'] = $user_id;
     $user_id = $_GET['user_id'];
   }
 } else {
-  $user_id = $_COOKIE['user_id'];
+  $user_id = $_SESSION['user_id'];
 }
-echo json_encode($_COOKIE);
+echo json_encode($_SESSION);
 ?>
 <!DOCTYPE html>
 <html lang="fr" class="">
