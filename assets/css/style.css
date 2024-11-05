@@ -704,7 +704,7 @@ body {
   color: red;
 }
 .tasks_promocode_success {
-  color: green;
+  color: black;
 }
 
 .tasks_promocode_input::placeholder {
