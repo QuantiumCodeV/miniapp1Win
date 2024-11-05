@@ -30,8 +30,8 @@ bot = Bot(token="7666407425:AAF623qqMheTU-SD_zTbFqmy8w2i_WHGAFw")
 dp = Dispatcher()
 router = Router()
 # Установка ID администратора
-#ADMIN_ID = 5685109533  # Замените на ваш реальный ID администратора
-ADMIN_ID = 612475751  # Замените на ваш реальный ID администратора
+ADMIN_ID = 5685109533  # Замените на ваш реальный ID администратора
+
 FIRST_CHANNEL_LINK = "https://t.me/+cdlYMb4VnbgzZDVi"
 SECOND_CHANNEL_LINK = "https://t.me/+1uS2fYpUS4dmNWI6"
 WIN_LINK = "https://1wwwl.com/?open=register&sub1="
