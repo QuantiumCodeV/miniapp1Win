@@ -52,7 +52,7 @@ $tasks = $tasks_result->fetch_assoc();
         ?>
       </p>
       <div class="main_buttons">
-        <button class="main_button" onclick="window.location.href='tasks.php'">Aller aux tâches</button>
+        <button class="main_button" onclick="window.location.href='tasks.php?user_id=<?php echo $user_id; ?>'">Aller aux tâches</button>
       </div>
     </div>
   </div>
