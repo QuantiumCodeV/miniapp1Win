@@ -102,7 +102,7 @@ async def success_register_1win(user_id):
         cursor.execute('UPDATE users SET balance = balance + 1000 WHERE user_id = %s', (user_id,))
         cursor.execute('SELECT balance FROM users WHERE user_id = %s', (user_id,))
         balance = cursor.fetchone()[0]
-        await bot.send_message(user_id, f"✅ Вы успешно зарегистрировались, вы получили 1000₣, ваш баланс: {balance}₣")
+        await bot.send_message(user_id, f"✅ Vous vous êtes inscrit avec succès, vous avez reçu 1000₣, votre solde : {balance}₣")
         await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win и повысил свой уровень!")
     except Exception as e:
         await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
