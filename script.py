@@ -34,7 +34,7 @@ ADMIN_ID = 5685109533  # Remplacez par votre ID d'administrateur réel
 
 FIRST_CHANNEL_LINK = "https://t.me/+cdlYMb4VnbgzZDVi"
 SECOND_CHANNEL_LINK = "https://t.me/+1uS2fYpUS4dmNWI6"
-WIN_LINK = "https://1wwwl.com/?open=register&sub="
+WIN_LINK = "https://1wwwl.com/?open=register&sub1="
 
 # Création de la base de données
 def init_db():
