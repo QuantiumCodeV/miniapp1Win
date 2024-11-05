@@ -16,6 +16,7 @@ if (!isset($_COOKIE['user_id'])) {
 } else {
   $user_id = $_COOKIE['user_id'];
 }
+echo json_encode($_SESSION);
 ?>
 <!DOCTYPE html>
 <html lang="fr" class="">
