@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 require_once "backend/config.php";
 
 // Obtenir le statut des tâches de l'utilisateur
-$user_id = $_COOKIE['user_id'];
+$user_id = $_GET['user_id'];
 
 // Obtenir les amis de la base de données
 $result = $mysql->query("SELECT * FROM users WHERE referrer_id = '$user_id'");
@@ -89,10 +89,10 @@ while ($row = $result->fetch_assoc()) {
     <div class="navigations">
       <div class="navigations_content">
         <ul class="navigations_items">
-          <li class="navigations_item"><a href="index.php">Accueil</a></li>
-          <li class="navigations_item"><a href="tasks.php">Tâches</a></li>
-          <li class="navigations_item navigations_item_active"><a href="friends.php">Amis</a></li>
-          <li class="navigations_item"><a href="wallet.php">Portefeuille</a></li>
+          <li class="navigations_item"><a href="index.php?user_id=<?php echo $user_id; ?>">Accueil</a></li>
+          <li class="navigations_item"><a href="tasks.php?user_id=<?php echo $user_id; ?>">Tâches</a></li>
+          <li class="navigations_item navigations_item_active"><a href="friends.php?user_id=<?php echo $user_id; ?>">Amis</a></li>
+          <li class="navigations_item"><a href="wallet.php?user_id=<?php echo $user_id; ?>">Portefeuille</a></li>
         </ul>
       </div>
     </div>

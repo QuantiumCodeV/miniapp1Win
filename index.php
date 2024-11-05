@@ -5,18 +5,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "backend/config.php";
 // Si user_id n'est pas encore enregistré dans les cookies
-echo json_encode($_SESSION);
-if (!isset($_SESSION['user_id'])) {
-  $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
-  if ($user_id) {
-    // Définir le cookie
-    $_SESSION['user_id'] = $user_id;
-    $user_id = $_GET['user_id'];
-  }
-} else {
-  $user_id = $_SESSION['user_id'];
-}
-echo json_encode($_SESSION);
+$user_id = $_GET['user_id'];
 ?>
 <!DOCTYPE html>
 <html lang="fr" class="">
@@ -150,10 +139,10 @@ echo json_encode($_SESSION);
     <div class="navigations">
       <div class="navigations_content">
         <ul class="navigations_items">
-          <li class="navigations_item navigations_item_active"><a href="index.php">Accueil</a></li>
-          <li class="navigations_item"><a href="tasks.php">Tâches</a></li>
-          <li class="navigations_item"><a href="friends.php">Amis</a></li>
-          <li class="navigations_item"><a href="wallet.php">Portefeuille</a></li>
+          <li class="navigations_item navigations_item_active"><a href="index.php?user_id=<?php echo $user_id; ?>">Accueil</a></li>
+          <li class="navigations_item"><a href="tasks.php?user_id=<?php echo $user_id; ?>">Tâches</a></li>
+          <li class="navigations_item"><a href="friends.php?user_id=<?php echo $user_id; ?>">Amis</a></li>
+          <li class="navigations_item"><a href="wallet.php?user_id=<?php echo $user_id; ?>">Portefeuille</a></li>
         </ul>
       </div>
     </div>
