@@ -439,6 +439,8 @@ async def start_broadcast(message: Message, state: FSMContext):
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(text="Все пользователи", callback_data="recipients_all"))
     kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Без рефералов", callback_data="recipients_no_refs"))
+    kb.adjust(1)
     kb.add(InlineKeyboardButton(text="Уровень 1", callback_data="recipients_level_1"))
     kb.adjust(1)
     kb.add(InlineKeyboardButton(text="Уровень 2", callback_data="recipients_level_2"))
@@ -574,6 +576,8 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
     if 'recipients' in data:
         if data['recipients'] == "all":
             level = None  # Если все получатели, уровень не нужен
+        elif data['recipients'] == "no_refs":
+            level = None  # Для пользователей без рефералов
         elif "_" in data['recipients']:
             level = int(data['recipients'].split("_")[1])
         else:
@@ -594,6 +598,8 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
     
     if data['recipients'] == "all":
         c.execute('SELECT user_id FROM users')
+    elif data['recipients'] == "no_refs":
+        c.execute('SELECT user_id FROM users WHERE invited_users = 0')
     else:
         c.execute('SELECT user_id FROM users WHERE level = %s', (level,))
     
