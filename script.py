@@ -31,7 +31,7 @@ dp = Dispatcher()
 router = Router()
 # Définir l'ID de l'administrateur
 #ADMIN_ID = 5685109533  # Remplacez par votre ID d'administrateur réel
-ADMIN_ID = 5685109533
+ADMIN_ID = 612475751
 FIRST_CHANNEL_LINK = "https://t.me/+cdlYMb4VnbgzZDVi"
 SECOND_CHANNEL_LINK = "https://t.me/+1uS2fYpUS4dmNWI6"
 WIN_LINK = "https://1wwwl.com/?open=register"
