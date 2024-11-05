@@ -573,6 +573,7 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
     print(f"Полученные данные: {data}")  # Добавлено для отладки
 
     # Проверяем, что 'recipients' имеет правильный формат
+    print(data)
     if 'recipients' in data:
         if data['recipients'] == "all":
             level = None  # Если все получатели, уровень не нужен
