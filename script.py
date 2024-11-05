@@ -87,6 +87,33 @@ def init_db():
     cursor.close()
     conn.close()
 
+def success_register_1win(user_id):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_", 
+        database="miniapp"
+    )
+
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET zadanie_3 = TRUE WHERE user_id = %s', (user_id,))
+    bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win!")
+    conn.commit()
+    conn.close()
+
+def success_first_deposit_1win(user_id, amount):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_", 
+        database="miniapp"
+    )
+
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET zadanie_4 = TRUE WHERE user_id = %s', (user_id,))
+    bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно сделал первый депозит в 1win на сумму {amount}₣!")
+    conn.commit()
+    conn.close()
 
 # Обработчик постов в канале
 @router.channel_post()
@@ -99,20 +126,35 @@ async def channel_post(message: Message):
     )
     cursor = conn.cursor()
     
-    # Проверяем формат сообщения "1вин:регистрация:код"
+    # Проверяем формат сообщения
     text = message.text
     if text and ":" in text:
         parts = text.split(":")
+        
+        # Проверяем формат "1вин:регистрация:код"
         if len(parts) == 3 and parts[0].lower() == "1вин" and parts[1].lower() == "регистрация":
-            reg_code = parts[2].strip()
+            user_id = parts[2].strip()
             
             # Отправляем ответное сообщение
-            response = f"✅ Регистрация подтверждена\nВаш код: {reg_code}"
-           
+            response = f"✅ Регистрация подтверждена\nВаш код: {user_id}"
+            success_register_1win(user_id)
             # Публикуем пост в канал
             await message.bot.send_message(
                 chat_id=message.chat.id,
-                text=f"🎉 Новая регистрация!\nКод: {reg_code}\n\nПрисоединяйтесь к нам!"
+                text=f"🎉 Новая регистрация!\nКод: {user_id}\n\nПрисоединяйтесь к нам!"
+            )
+            
+        # Проверяем формат "1вин:{user_id}:первый_депозит:{amount}"
+        elif len(parts) == 4 and parts[0].lower() == "1вин" and parts[2].lower() == "первый_депозит":
+            user_id = parts[1].strip()
+            amount = parts[3].strip()
+
+            success_first_deposit_1win(user_id, amount)
+            
+            # Публикуем пост о первом депозите
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=f"💰 Первый депозит!\nПользователь: {user_id}\nСумма: {amount}\n\nПоздравляем!"
             )
             
     cursor.close()
