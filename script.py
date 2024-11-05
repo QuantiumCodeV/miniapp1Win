@@ -88,6 +88,7 @@ def init_db():
     conn.close()
 
 async def success_register_1win(user_id):
+
     conn = mysql.connector.connect(
         host="localhost",
         user="miniapp",
@@ -96,8 +97,12 @@ async def success_register_1win(user_id):
     )
 
     cursor = conn.cursor()
-    cursor.execute('UPDATE users SET zadanie_3 = TRUE WHERE user_id = %s', (user_id,))
-    await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win!")
+    try:
+        cursor.execute('UPDATE users SET zadanie_3 = TRUE WHERE user_id = %s', (user_id,))
+        await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win!")
+    except Exception as e:
+        await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
+        print(e)
     conn.commit()
     conn.close()
 
@@ -110,8 +115,11 @@ async def success_first_deposit_1win(user_id, amount):
     )
 
     cursor = conn.cursor()
-    cursor.execute('UPDATE users SET zadanie_4 = TRUE WHERE user_id = %s', (user_id,))
-    await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно сделал первый депозит в 1win на сумму {amount}₣!")
+    try:
+        cursor.execute('UPDATE users SET zadanie_4 = TRUE WHERE user_id = %s', (user_id,))
+        await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно сделал первый депозит в 1win на сумму {amount}₣!")
+    except Exception as e:
+        await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
     conn.commit()
     conn.close()
 
