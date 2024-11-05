@@ -87,6 +87,31 @@ def init_db():
     cursor.close()
     conn.close()
 
+
+# Обработчик постов в канале
+@router.channel_post()
+async def channel_post(message: Message):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_", 
+        database="miniapp"
+    )
+    cursor = conn.cursor()
+    # Проверяем формат сообщения "1вин:регистрация:код"
+    text = message.text
+    if text and ":" in text:
+        parts = text.split(":")
+        if len(parts) == 3 and parts[0].lower() == "1вин" and parts[1].lower() == "регистрация":
+            reg_code = parts[2].strip()
+            
+            # Отправляем ответное сообщение
+            response = f"✅ Регистрация подтверждена\nВаш код: {reg_code}\n\nПерейдите по ссылке для завершения: {channels[2]}"
+            await message.answer(response)
+    cursor.close()
+    conn.close()
+
+
 # Gestionnaire de liste des codes promo
 @router.message(Command("promos"))
 async def list_promos(message: Message):
