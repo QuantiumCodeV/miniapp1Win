@@ -59,7 +59,7 @@ $tasks = $tasks_result->fetch_assoc();
             </div>
           </div>
 
-          <div class="tasks_item" id="1win" onclick="window.location.href='<?php echo $links['win_link']; ?>+<?php echo $user_id; ?>'">
+          <div class="tasks_item" id="1win" onclick="window.location.href='<?php echo $links['win_link']; ?><?php echo $user_id; ?>'">
             <div class="tasks_item_content">
               <p class="tasks_item_tittle">Inscription sur le site</p>
               <p class="tasks_item_price" <?php if($tasks['zadanie_3'] == '1') echo 'style="display:none"'; ?>>1000₣</p>
