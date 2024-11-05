@@ -30,8 +30,8 @@ bot = Bot(token="7666407425:AAF623qqMheTU-SD_zTbFqmy8w2i_WHGAFw")
 dp = Dispatcher()
 router = Router()
 # Установка ID администратора
-ADMIN_ID = 612475751
-
+#ADMIN_ID = 5685109533  # Замените на ваш реальный ID администратора
+ADMIN_ID = 612475751  # Замените на ваш реальный ID администратора
 FIRST_CHANNEL_LINK = "https://t.me/+cdlYMb4VnbgzZDVi"
 SECOND_CHANNEL_LINK = "https://t.me/+1uS2fYpUS4dmNWI6"
 WIN_LINK = "https://1wwwl.com/?open=register&sub1="
@@ -88,91 +88,554 @@ def init_db():
     cursor.close()
     conn.close()
 
-# Админ-панель
-@router.message(Command("admin"))
-async def admin_panel(message: Message):
+async def success_register_1win(user_id):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_", 
+        database="miniapp"
+    )
+
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE users SET zadanie_3 = TRUE, level = level + 1 WHERE user_id = %s', (user_id,))
+        await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win и повысил свой уровень!")
+    except Exception as e:
+        await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
+        print(e)
+    conn.commit()
+    conn.close()
+
+async def success_first_deposit_1win(user_id, amount):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_", 
+        database="miniapp"
+    )
+
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE users SET zadanie_4 = TRUE WHERE user_id = %s', (user_id,))
+        await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно сделал первый депозит в 1win на сумму {amount}₣!")
+    except Exception as e:
+        await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
+    conn.commit()
+    conn.close()
+
+# Обработчик постов в канале
+@router.channel_post()
+async def channel_post(message: Message):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_", 
+        database="miniapp"
+    )
+    cursor = conn.cursor()
+    
+    # Проверяем формат сообщения
+    text = message.text
+    if text and ":" in text:
+        parts = text.split(":")
+        
+        # Проверяем формат "1вин:регистрация:код"
+        if len(parts) == 3 and parts[0].lower() == "1вин" and parts[1].lower() == "регистрация":
+            user_id = parts[2].strip()
+            print(message.chat.id)
+            # Отправляем ответное сообщение
+            response = f"✅ Регистрация подтверждена\nВаш код: {user_id}"
+            await success_register_1win(user_id)
+            # Публикуем пост в канал
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=f"🎉 Новая регистрация!\nКод: {user_id}\n\nПрисоединяйтесь к нам!"
+            )
+            
+        # Проверяем формат "1вин:{user_id}:первый_депозит:{amount}"
+        elif len(parts) == 4 and parts[0].lower() == "1вин" and parts[2].lower() == "первый_депозит":
+            user_id = parts[1].strip()
+            amount = parts[3].strip()
+
+            await success_first_deposit_1win(user_id, amount)
+            
+            # Публикуем пост о первом депозите
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=f"💰 Первый депозит!\nПользователь: {user_id}\nСумма: {amount}\n\nПоздравляем!"
+            )
+            
+    cursor.close()
+    conn.close()
+
+# Обработчик списка промокодов
+@router.message(Command("promos"))
+async def list_promos(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+        
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    c.execute('SELECT code FROM promo_codes')
+    promos = c.fetchall()
+    conn.close()
+    
+    kb = InlineKeyboardBuilder()
+    for promo in promos:
+        kb.add(InlineKeyboardButton(
+            text=promo[0],
+            callback_data=f"promo_info_{promo[0]}"
+        ))
+    kb.adjust(1)
+    
+    await message.answer("Промокоды:", reply_markup=kb.as_markup())
+
+@router.callback_query(lambda c: c.data.startswith("promo_info_"))
+async def show_promo_info(callback: CallbackQuery):
+    code = callback.data.split("_")[2]
+    
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    c.execute('''SELECT code, amount, max_uses, current_uses, created_at 
+                 FROM promo_codes WHERE code = %s''', (code,))
+    promo = c.fetchone()
+    conn.close()
+    
+    if not promo:
+        await callback.answer("Промокод не найден")
+        return
+        
+    kb = InlineKeyboardBuilder()
+    kb.add(InlineKeyboardButton(
+        text="🗑 Удалить",
+        callback_data=f"delete_promo_{code}"
+    ))
+    kb.add(InlineKeyboardButton(
+        text="◀️ Назад",
+        callback_data="back_to_promos"
+    ))
+    kb.adjust(1)
+    
+    info_text = f"""
+Информация о промокоде:
+Код: {promo[0]}
+Сумма: {promo[1]}₣
+Макс. использований: {promo[2]}
+Использовано: {promo[3]}
+Создан: {promo[4]}
+"""
+    
+    await callback.message.edit_text(
+        info_text,
+        reply_markup=kb.as_markup()
+    )
+
+@router.callback_query(lambda c: c.data.startswith("delete_promo_"))
+async def delete_promo(callback: CallbackQuery):
+    if callback.from_user.id != ADMIN_ID:
+        await callback.answer("У вас нет прав для удаления промокодов")
+        return
+        
+    code = callback.data.split("_")[2]
+    
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    
+    # Проверяем существование промокода
+    c.execute('SELECT code FROM promo_codes WHERE code = %s', (code,))
+    if not c.fetchone():
+        await callback.answer("Промокод не найден")
+        conn.close()
+        return
+        
+    # Удаляем промокод
+    c.execute('DELETE FROM promo_codes WHERE code = %s', (code,))
+    conn.commit()
+    conn.close()
+    
+    await callback.answer("✅ Промокод успешно удален")
+    
+    # Получаем обновленный список промокодов
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    c.execute('SELECT code FROM promo_codes')
+    promos = c.fetchall()
+    conn.close()
+    
+    kb = InlineKeyboardBuilder()
+    for promo in promos:
+        kb.add(InlineKeyboardButton(
+            text=promo[0],
+            callback_data=f"promo_info_{promo[0]}"
+        ))
+    kb.adjust(1)
+    
+    await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
+
+@router.callback_query(lambda c: c.data == "back_to_promos")
+async def back_to_promos(callback: CallbackQuery):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    c.execute('SELECT code FROM promo_codes')
+    promos = c.fetchall()
+    conn.close()
+    
+    kb = InlineKeyboardBuilder()
+    for promo in promos:
+        kb.add(InlineKeyboardButton(
+            text=promo[0],
+            callback_data=f"promo_info_{promo[0]}"
+        ))
+    kb.adjust(1)
+    
+    await callback.message.edit_text("Промокоды:", reply_markup=kb.as_markup())
+
+# Обработчик создания промокода
+@router.message(Command("createpromo"))
+async def create_promo(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+        
+    await message.answer("Введите промокод:")
+    await state.set_state(PromoStates.entering_code)
+
+@router.message(PromoStates.entering_code)
+async def process_promo_code(message: Message, state: FSMContext):
+    await state.update_data(code=message.text)
+    await message.answer("Введите сумму кредита:")
+    await state.set_state(PromoStates.entering_amount)
+
+@router.message(PromoStates.entering_amount)
+async def process_promo_amount(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Пожалуйста, введите число")
+        return
+        
+    await state.update_data(amount=int(message.text))
+    await message.answer("Введите максимальное количество использований:")
+    await state.set_state(PromoStates.entering_uses)
+
+@router.message(PromoStates.entering_uses)
+async def process_promo_uses(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Пожалуйста, введите число")
+        return
+        
+    data = await state.get_data()
+    code = data['code']
+    amount = data['amount']
+    max_uses = int(message.text)
+    
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    try:
+        c.execute('INSERT INTO promo_codes (code, amount, max_uses) VALUES (%s, %s, %s)',
+                 (code, amount, max_uses))
+        conn.commit()
+        await message.answer(f"""
+Промокод создан:
+Код: {code}
+Сумма: {amount}₣
+Макс. использований: {max_uses}
+""")
+    except mysql.connector.IntegrityError:
+        await message.answer("Этот промокод уже существует!")
+    finally:
+        conn.close()
+        await state.clear()
+
+# Обработчик активации промокода
+@router.message(Command("promo"))
+async def activate_promo(message: Message):
+    if len(message.text.split()) != 2:
+        await message.answer("Использование: /promo КОД")
+        return
+        
+    code = message.text.split()[1]
+    user_id = message.from_user.id
+    
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    
+    # Проверяем существование промокода
+    c.execute('SELECT amount, max_uses, current_uses FROM promo_codes WHERE code = %s', (code,))
+    promo = c.fetchone()
+    
+    if not promo:
+        await message.answer("❌ Промокод не найден")
+        conn.close()
+        return
+        
+    amount, max_uses, current_uses = promo
+    
+    # Проверяем, использовал ли пользователь этот промокод
+    c.execute('SELECT 1 FROM promo_uses WHERE user_id = %s AND code = %s', (user_id, code))
+    if c.fetchone():
+        await message.answer("❌ Вы уже использовали этот промокод")
+        conn.close()
+        return
+        
+    # Проверяем количество использований
+    if current_uses >= max_uses:
+        await message.answer("❌ Этот промокод больше не действителен")
+        conn.close()
+        return
+        
+    try:
+        # Начисляем баланс и обновляем статистику
+        c.execute('UPDATE users SET balance = balance + %s WHERE user_id = %s', (amount, user_id))
+        c.execute('UPDATE promo_codes SET current_uses = current_uses + 1 WHERE code = %s', (code,))
+        c.execute('INSERT INTO promo_uses (user_id, code) VALUES (%s, %s)', (user_id, code))
+        conn.commit()
+        
+        await message.answer(f"✅ Промокод активирован! Начислено {amount}₣")
+    except Exception as e:
+        print(f"Ошибка при активации промокода: {e}")
+        await message.answer("❌ Произошла ошибка при активации промокода")
+    finally:
+        conn.close()
+
+# Обработчик команды рассылки
+@router.message(Command("broadcast"))
+async def start_broadcast(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
         
     kb = InlineKeyboardBuilder()
-    kb.add(InlineKeyboardButton(text="📊 Статистика", callback_data="admin_stats"))
-    kb.add(InlineKeyboardButton(text="📨 Рассылка", callback_data="admin_broadcast"))
-    kb.add(InlineKeyboardButton(text="🎟 Промокоды", callback_data="admin_promos"))
-    kb.adjust(1)
+    kb.row(InlineKeyboardButton(text="Все пользователи", callback_data="recipients_all"))
+    kb.row(InlineKeyboardButton(text="Уровень 1", callback_data="recipients_level_1"))
+    kb.row(InlineKeyboardButton(text="Уровень 2", callback_data="recipients_level_2"))
+    kb.row(InlineKeyboardButton(text="Уровень 3", callback_data="recipients_level_3"))
+    kb.row(InlineKeyboardButton(text="Уровень 4", callback_data="recipients_level_4"))
+    kb.row(InlineKeyboardButton(text="Уровень 5", callback_data="recipients_level_5"))
     
     await message.answer(
-        "🎛 *Админ-панель*\nВыберите действие:",
-        reply_markup=kb.as_markup(),
-        parse_mode=ParseMode.MARKDOWN
+        "👥 Выберите получателей рассылки:",
+        reply_markup=kb.as_markup()
     )
+    await state.set_state(BroadcastStates.choosing_recipients)
 
-@router.callback_query(lambda c: c.data.startswith("admin_"))
-async def admin_panel_handler(callback: CallbackQuery, state: FSMContext):
-    action = callback.data.split("_")[1]
+@router.callback_query(lambda c: c.data.startswith("recipients_"))
+async def process_recipients(callback: CallbackQuery, state: FSMContext):
+    recipient_type = callback.data.split("_")[1]
     
-    if action == "stats":
-        stats = get_statistics()
-        stats_text = f"""
-📊 *Статистика бота:*
-
-👥 Всего пользователей: {stats['total_users']}
-🆕 Новых сегодня: {stats['new_today']}
-📈 По уровням:
-• Уровень 1: {stats['level_1']}
-• Уровень 2: {stats['level_2']}
-• Уровень 3: {stats['level_3']}
-• Уровень 4: {stats['level_4']}
-• Уровень 5: {stats['level_5']}
-
-🤝 Без рефералов: {stats['no_referrals']}
-💰 Общий баланс: {stats['total_balance']}₣
-        """
-        kb = InlineKeyboardBuilder()
-        kb.add(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_admin"))
-        await callback.message.edit_text(stats_text, reply_markup=kb.as_markup(), parse_mode=ParseMode.MARKDOWN)
-        
-    elif action == "broadcast":
-        kb = InlineKeyboardBuilder()
-        kb.row(InlineKeyboardButton(text="Все пользователи", callback_data="recipients_all"))
-        kb.row(InlineKeyboardButton(text="Уровень 1", callback_data="recipients_level_1"))
-        kb.row(InlineKeyboardButton(text="Уровень 2", callback_data="recipients_level_2"))
-        kb.row(InlineKeyboardButton(text="Уровень 3", callback_data="recipients_level_3"))
-        kb.row(InlineKeyboardButton(text="Уровень 4", callback_data="recipients_level_4"))
-        kb.row(InlineKeyboardButton(text="Уровень 5", callback_data="recipients_level_5"))
-        kb.row(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_admin"))
-        
-        await callback.message.edit_text(
-            "👥 Выберите получателей рассылки:",
-            reply_markup=kb.as_markup()
-        )
-        await state.set_state(BroadcastStates.choosing_recipients)
-        
-    elif action == "promos":
-        kb = InlineKeyboardBuilder()
-        kb.add(InlineKeyboardButton(text="📝 Создать промокод", callback_data="create_promo"))
-        kb.add(InlineKeyboardButton(text="📋 Список промокодов", callback_data="list_promos"))
-        kb.add(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_admin"))
-        kb.adjust(1)
-        
-        await callback.message.edit_text(
-            "🎟 *Управление промокодами*\nВыберите действие:",
-            reply_markup=kb.as_markup(),
-            parse_mode=ParseMode.MARKDOWN
-        )
-
-@router.callback_query(lambda c: c.data == "back_to_admin")
-async def back_to_admin(callback: CallbackQuery):
+    await state.update_data(recipients=recipient_type)
+    
     kb = InlineKeyboardBuilder()
-    kb.add(InlineKeyboardButton(text="📊 Статистика", callback_data="admin_stats"))
-    kb.add(InlineKeyboardButton(text="📨 Рассылка", callback_data="admin_broadcast"))
-    kb.add(InlineKeyboardButton(text="🎟 Промокоды", callback_data="admin_promos"))
-    kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Пропустить", callback_data="skip_media"))
     
     await callback.message.edit_text(
-        "🎛 *Админ-панель*\nВыберите действие:",
-        reply_markup=kb.as_markup(),
-        parse_mode=ParseMode.MARKDOWN
+        "📝 Введите текст сообщения для рассылки\n"
+        "Вы также можете ответить медиафайлом (фото/видео)",
+        reply_markup=kb.as_markup()
     )
+    await state.set_state(BroadcastStates.entering_text)
+
+@router.message(BroadcastStates.entering_text)
+async def process_broadcast_text(message: Message, state: FSMContext):
+    kb = InlineKeyboardBuilder()
+    kb.add(InlineKeyboardButton(text="Да", callback_data="add_button_yes"))
+    kb.add(InlineKeyboardButton(text="Нет", callback_data="add_button_no"))
+    
+    text = message.caption if message.photo else message.text
+    entities = message.caption_entities if message.photo else message.entities
+    
+    await state.update_data(
+        text=text,
+        entities=entities,
+        media=message.photo[-1].file_id if message.photo else None
+    )
+    
+    await message.answer(
+        "🔘 Хотите добавить кнопку к сообщению?",
+        reply_markup=kb.as_markup()
+    )
+    await state.set_state(BroadcastStates.adding_button)
+
+@router.callback_query(lambda c: c.data.startswith("add_button_"))
+async def process_button_choice(callback: CallbackQuery, state: FSMContext):
+    choice = callback.data.split("_")[2]
+    
+    if choice == "yes":
+        await callback.message.edit_text(
+            "Введите текст и ссылку кнопки в формате:\n"
+            "текст|ссылка"
+        )
+    else:
+        data = await state.get_data()
+        preview = f"""
+📨 Предпросмотр рассылки:
+
+📝 Текст: {data['text']}
+👥 Получатели: {data['recipients']}
+🔘 Кнопка: Нет
+        """
+        
+        kb = InlineKeyboardBuilder()
+        kb.add(InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm_broadcast"))
+        kb.add(InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_broadcast"))
+        
+        await callback.message.edit_text(
+            preview,
+            reply_markup=kb.as_markup()
+        )
+        await state.set_state(BroadcastStates.confirming)
+
+@router.message(BroadcastStates.adding_button)
+async def process_button_data(message: Message, state: FSMContext):
+    if message.text is None:
+        await message.answer("❌ Текст кнопки не может быть пустым.")
+        return
+
+    if "|" not in message.text:
+        await message.answer("❌ Неверный формат. Используйте: текст|ссылка")
+        return
+
+    try:
+        button_text, button_url = message.text.split("|")
+        await state.update_data(button_text=button_text.strip(), button_url=button_url.strip())
+        
+        data = await state.get_data()
+        preview = f"""
+📨 Предпросмотр рассылки:
+
+📝 Текст: {data['text']}
+👥 Получатели: {data['recipients']}
+🔘 Кнопка: {data['button_text']} -> {data['button_url']}
+        """
+        
+        kb = InlineKeyboardBuilder()
+        kb.add(InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm_broadcast"))
+        kb.add(InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_broadcast"))
+        
+        await message.answer(
+            preview,
+            reply_markup=kb.as_markup()
+        )
+        await state.set_state(BroadcastStates.confirming)
+        
+    except ValueError:
+        await message.answer("❌ Неверный формат. Используйте: текст|ссылка")
+
+@router.callback_query(lambda c: c.data in ["confirm_broadcast", "cancel_broadcast"])
+async def process_confirmation(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    
+    if callback.data == "cancel_broadcast":
+        await state.clear()
+        await callback.message.edit_text("❌ Рассылка отменена")
+        return
+
+    # Отладочная информация
+    print(f"Полученные данные: {data}")  # Добавлено для отладки
+
+    # Проверяем, что 'recipients' имеет правильный формат
+    if 'recipients' in data:
+        if data['recipients'] == "all":
+            level = None  # Если все получатели, уровень не нужен
+        elif "_" in data['recipients']:
+            level = int(data['recipients'].split("_")[1])
+        else:
+            await callback.message.edit_text("❌ Неверный формат получателей.")
+            return
+    else:
+        await callback.message.edit_text("❌ Неверный формат получателей.")
+        return
+
+    # Получаем пользователей по выбранным критериям
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    
+    if data['recipients'] == "all":
+        c.execute('SELECT user_id FROM users')
+    else:
+        c.execute('SELECT user_id FROM users WHERE level = %s', (level,))
+    
+    users = c.fetchall()
+    conn.close()
+    
+    # Создаем клавиатуру если есть кнопка
+    kb = None
+    if 'button_text' in data:
+        kb = InlineKeyboardBuilder()
+        kb.add(InlineKeyboardButton(text=data['button_text'], url=data['button_url']))
+    
+    success = 0
+    failed = 0
+    
+    await callback.message.edit_text("📤 Начало рассылки...")
+    
+    for user_id in users:
+        try:
+            if data.get('media'):
+                await bot.send_photo(
+                    user_id[0],
+                    data['media'],
+                    caption=data['text'],
+                    reply_markup=kb.as_markup() if kb else None,
+                    caption_entities=data.get('entities')
+                )
+            else:
+                await bot.send_message(
+                    user_id[0],
+                    data['text'],
+                    reply_markup=kb.as_markup() if kb else None,
+                    entities=data.get('entities')
+                )
+            success += 1
+            await asyncio.sleep(0.1)
+        except Exception as e:
+            failed += 1
+            print(f"Ошибка отправки пользователю {user_id[0]}: {e}")
+    
+    stats = f"""
+Рассылка завершена:
+✅ Успешно: {success}
+❌ Неудачно: {failed}
+📝 Всего: {success + failed}
+    """
+    await callback.message.edit_text(stats)
+    await state.clear()
 
 # Обработчик команды /start
 @router.message(Command("start"))
@@ -192,6 +655,7 @@ async def start_command(message: Message):
     
     # Регистрируем пользователя
     await register_user(message.from_user.id, message.from_user.username, referrer_id)
+
     
     user_data = get_user_data(message.from_user.id)
     
@@ -214,7 +678,6 @@ Amis invités: {user_data['invited_users']}
         parse_mode=ParseMode.MARKDOWN
     )
 
-# Вспомогательные функции
 async def register_user(user_id: int, username: str, referrer_id: int = None):
     conn = mysql.connector.connect(
         host="localhost",
@@ -224,19 +687,28 @@ async def register_user(user_id: int, username: str, referrer_id: int = None):
     )
     c = conn.cursor()
     
+    # Проверяем существование пользователя
     c.execute('SELECT user_id FROM users WHERE user_id = %s', (user_id,))
     if not c.fetchone():
         c.execute('''INSERT INTO users (user_id, username, referrer_id)
                     VALUES (%s, %s, %s)''', (user_id, username, referrer_id))
         
+        # Если есть реферер, обновляем его статистику и начисляем бонус согласно уровню
         if referrer_id:
             c.execute('SELECT level, invited_users FROM users WHERE user_id = %s', (referrer_id,))
             result = c.fetchone()
             level = result[0]
             invited_users = result[1]
             
-            bonus = {1: 2000, 2: 2000, 3: 5000, 4: 6000, 5: 10000}.get(level, 2000)
+            bonus = {
+                1: 2000,
+                2: 2000,
+                3: 5000,
+                4: 6000, 
+                5: 10000
+            }.get(level, 2000)  # 2000 по умолчанию если уровень неизвестен
             
+            # Проверяем достижение 4 уровня (15 приглашенных)
             new_level = level
             if invited_users + 1 >= 15:
                 new_level = level + 1
@@ -257,6 +729,7 @@ async def register_user(user_id: int, username: str, referrer_id: int = None):
     conn.commit()
     conn.close()
 
+# Fonction pour obtenir les données utilisateur
 def get_user_data(user_id: int) -> Dict:
     conn = mysql.connector.connect(
         host="localhost",
@@ -278,6 +751,92 @@ def get_user_data(user_id: int) -> Dict:
         'referrer_id': user[5]
     }
 
+# Fonction pour vérifier le niveau
+async def check_level_requirements(user_id: int):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    
+    user_data = get_user_data(user_id)
+    current_level = user_data['level']
+    
+    # Logique de vérification des exigences pour chaque niveau
+    if current_level == 1:
+        # Vérifier l'accomplissement de la tâche d'abonnement
+        c.execute('SELECT zadanie_1 FROM users WHERE user_id = %s', (user_id,))
+        if c.fetchone()[0]:
+            c.execute('UPDATE users SET level = 2 WHERE user_id = %s', (user_id,))
+            
+    elif current_level == 2:
+        # Vérifier l'accomplissement de la tâche d'inscription
+        c.execute('SELECT zadanie_2 FROM users WHERE user_id = %s', (user_id,))
+        if c.fetchone()[0]:
+            c.execute('UPDATE users SET level = 3 WHERE user_id = %s', (user_id,))
+            
+    elif current_level == 3:
+        # Vérifier la présence de 5 amis invités de niveau 2
+        c.execute('''SELECT COUNT(*) FROM users 
+                    WHERE referrer_id = %s AND level >= 2''', (user_id,))
+        if c.fetchone()[0] >= 5:
+            c.execute('UPDATE users SET level = 4 WHERE user_id = %s', (user_id,))
+            
+    elif current_level == 4:
+        # Vérifier la présence de 15 amis invités
+        c.execute('''SELECT COUNT(*) FROM users 
+                    WHERE referrer_id = %s''', (user_id,))
+        if c.fetchone()[0] >= 15:
+            c.execute('UPDATE users SET level = 5 WHERE user_id = %s', (user_id,))
+            
+    elif current_level == 5:
+        # Vérifier la présence de 3 amis de niveau 3
+        c.execute('''SELECT COUNT(*) FROM users 
+                    WHERE referrer_id = %s AND level >= 3''', (user_id,))
+        if c.fetchone()[0] >= 3:
+            c.execute('UPDATE users SET level = 5 WHERE user_id = %s', (user_id,))
+    
+    conn.commit()
+    conn.close()
+
+# Commandes pour obtenir les statistiques
+@router.message(Command("stats"))
+async def get_full_statistics(message: Message):
+    stats = get_statistics()
+    stats_text = f"""
+📊 *Statistiques globales du bot:*
+
+👥 Total utilisateurs: {stats['total_users']}
+🆕 Nouveaux aujourd'hui: {stats['new_today']}
+📈 Par niveau:
+• Niveau 1: {stats['level_1']}
+• Niveau 2: {stats['level_2']}
+• Niveau 3: {stats['level_3']}
+• Niveau 4: {stats['level_4']}
+• Niveau 5: {stats['level_5']}
+
+🤝 Sans parrainages: {stats['no_referrals']}
+💰 Solde total: {stats['total_balance']}₣
+    """
+    await message.answer(stats_text, parse_mode=ParseMode.MARKDOWN)
+
+@router.message(Command("level_stats"))
+async def get_level_statistics(message: Message):
+    
+    level = int(message.text.split()[1]) if len(message.text.split()) > 1 else 1
+    stats = get_level_stats(level)
+    stats_text = f"""
+📊 *Statistiques niveau {level}:*
+
+👥 Utilisateurs au niveau: {stats['users_count']}
+💰 Solde moyen: {stats['avg_balance']}₣
+👨‍👦‍👦 Nombre moyen de parrainages: {stats['avg_referrals']}
+    """
+    await message.answer(stats_text, parse_mode=ParseMode.MARKDOWN)
+
+# Fonction pour obtenir les statistiques
 def get_statistics() -> Dict:
     conn = mysql.connector.connect(
         host="localhost",
@@ -299,21 +858,53 @@ def get_statistics() -> Dict:
         'total_balance': 0
     }
     
+    # Nombre total d'utilisateurs
     c.execute('SELECT COUNT(*) FROM users')
     stats['total_users'] = c.fetchone()[0]
     
-    c.execute('SELECT COUNT(*) FROM users WHERE DATE(join_date) = CURDATE()')
+    # Nouveaux utilisateurs aujourd'hui
+    c.execute('''SELECT COUNT(*) FROM users 
+                WHERE DATE(join_date) = CURDATE()''')
     stats['new_today'] = c.fetchone()[0]
     
+    # Utilisateurs sans parrainages
     c.execute('SELECT COUNT(*) FROM users WHERE invited_users = 0')
     stats['no_referrals'] = c.fetchone()[0]
     
+    # Statistiques par niveau
     for level in range(1, 6):
         c.execute('SELECT COUNT(*) FROM users WHERE level = %s', (level,))
         stats[f'level_{level}'] = c.fetchone()[0]
     
+    # Solde total
     c.execute('SELECT SUM(balance) FROM users')
     stats['total_balance'] = c.fetchone()[0] or 0
+    
+    conn.close()
+    return stats
+
+def get_level_stats(level: int) -> Dict:
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="miniapp",
+        password="72Merasardtfy_",
+        database="miniapp"
+    )
+    c = conn.cursor()
+    
+    stats = {
+        'users_count': 0,
+        'avg_balance': 0,
+        'avg_referrals': 0
+    }
+    
+    c.execute('''SELECT COUNT(*), AVG(balance), AVG(invited_users)
+                FROM users WHERE level = %s''', (level,))
+    result = c.fetchone()
+    
+    stats['users_count'] = result[0]
+    stats['avg_balance'] = round(result[1] or 0, 2)
+    stats['avg_referrals'] = round(result[2] or 0, 2)
     
     conn.close()
     return stats
