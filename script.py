@@ -106,7 +106,7 @@ async def channel_post(message: Message):
             reg_code = parts[2].strip()
             
             # Отправляем ответное сообщение
-            response = f"✅ Регистрация подтверждена\nВаш код: {reg_code}\n\nПерейдите по ссылке для завершения: {channels[2]}"
+            response = f"✅ Регистрация подтверждена\nВаш код: {reg_code}"
             await message.answer(response)
     cursor.close()
     conn.close()
