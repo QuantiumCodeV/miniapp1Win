@@ -87,7 +87,7 @@ def init_db():
     cursor.close()
     conn.close()
 
-def success_register_1win(user_id):
+async def success_register_1win(user_id):
     conn = mysql.connector.connect(
         host="localhost",
         user="miniapp",
@@ -97,11 +97,11 @@ def success_register_1win(user_id):
 
     cursor = conn.cursor()
     cursor.execute('UPDATE users SET zadanie_3 = TRUE WHERE user_id = %s', (user_id,))
-    bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win!")
+    await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win!")
     conn.commit()
     conn.close()
 
-def success_first_deposit_1win(user_id, amount):
+async def success_first_deposit_1win(user_id, amount):
     conn = mysql.connector.connect(
         host="localhost",
         user="miniapp",
@@ -111,7 +111,7 @@ def success_first_deposit_1win(user_id, amount):
 
     cursor = conn.cursor()
     cursor.execute('UPDATE users SET zadanie_4 = TRUE WHERE user_id = %s', (user_id,))
-    bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно сделал первый депозит в 1win на сумму {amount}₣!")
+    await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно сделал первый депозит в 1win на сумму {amount}₣!")
     conn.commit()
     conn.close()
 
@@ -134,10 +134,10 @@ async def channel_post(message: Message):
         # Проверяем формат "1вин:регистрация:код"
         if len(parts) == 3 and parts[0].lower() == "1вин" and parts[1].lower() == "регистрация":
             user_id = parts[2].strip()
-            
+            print(message.chat.id)
             # Отправляем ответное сообщение
             response = f"✅ Регистрация подтверждена\nВаш код: {user_id}"
-            success_register_1win(user_id)
+            await success_register_1win(user_id)
             # Публикуем пост в канал
             await message.bot.send_message(
                 chat_id=message.chat.id,
@@ -149,7 +149,7 @@ async def channel_post(message: Message):
             user_id = parts[1].strip()
             amount = parts[3].strip()
 
-            success_first_deposit_1win(user_id, amount)
+            await success_first_deposit_1win(user_id, amount)
             
             # Публикуем пост о первом депозите
             await message.bot.send_message(
@@ -647,7 +647,7 @@ async def start_command(message: Message):
     ref_link = f"https://t.me/fasdfadf_bot?start={message.from_user.id}"
     
     # Enregistrer l'utilisateur
-    register_user(message.from_user.id, message.from_user.username, referrer_id)
+    await register_user(message.from_user.id, message.from_user.username, referrer_id)
 
     
     user_data = get_user_data(message.from_user.id)
@@ -671,7 +671,7 @@ Amis invités: {user_data['invited_users']}
         parse_mode=ParseMode.MARKDOWN
     )
 
-def register_user(user_id: int, username: str, referrer_id: int = None):
+async def register_user(user_id: int, username: str, referrer_id: int = None):
     conn = mysql.connector.connect(
         host="localhost",
         user="miniapp",
@@ -704,7 +704,7 @@ def register_user(user_id: int, username: str, referrer_id: int = None):
                             balance = balance + %s,
                             zadanie_5 = 1
                         WHERE user_id = %s''', (bonus, referrer_id))
-            bot.send_message(
+            await bot.send_message(
                 referrer_id,
                 f"🎉 Vous avez un nouvel utilisateur invité!\n"
                 f"💰 Vous avez reçu un bonus de {bonus}₣"
