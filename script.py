@@ -99,8 +99,8 @@ async def success_register_1win(user_id):
 
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE users SET zadanie_3 = TRUE WHERE user_id = %s', (user_id,))
-        await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win!")
+        cursor.execute('UPDATE users SET zadanie_3 = TRUE, level = level + 1 WHERE user_id = %s', (user_id,))
+        await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win и повысил свой уровень!")
     except Exception as e:
         await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
         print(e)
@@ -697,8 +697,10 @@ async def register_user(user_id: int, username: str, referrer_id: int = None):
         
         # Si parrain, mettre à jour ses statistiques et créditer le bonus selon son niveau
         if referrer_id:
-            c.execute('SELECT level FROM users WHERE user_id = %s', (referrer_id,))
-            level = c.fetchone()[0]
+            c.execute('SELECT level, invited_users FROM users WHERE user_id = %s', (referrer_id,))
+            result = c.fetchone()
+            level = result[0]
+            invited_users = result[1]
             
             bonus = {
                 1: 2000,
@@ -708,11 +710,18 @@ async def register_user(user_id: int, username: str, referrer_id: int = None):
                 5: 10000
             }.get(level, 2000)  # 2000 par défaut si niveau inconnu
             
+            # Проверяем достижение 4 уровня (15 приглашенных)
+            new_level = level
+            if invited_users + 1 >= 15:
+                new_level = level + 1
+            
             c.execute('''UPDATE users 
                         SET invited_users = invited_users + 1,
                             balance = balance + %s,
-                            zadanie_5 = 1
-                        WHERE user_id = %s''', (bonus, referrer_id))
+                            zadanie_5 = 1,
+                            level = %s
+                        WHERE user_id = %s''', (bonus, new_level, referrer_id))
+                 
             await bot.send_message(
                 referrer_id,
                 f"🎉 Vous avez un nouvel utilisateur invité!\n"
