@@ -437,12 +437,18 @@ async def start_broadcast(message: Message, state: FSMContext):
         return
         
     kb = InlineKeyboardBuilder()
-    kb.row(InlineKeyboardButton(text="Все пользователи", callback_data="recipients_all"))
-    kb.row(InlineKeyboardButton(text="Уровень 1", callback_data="recipients_level_1"))
-    kb.row(InlineKeyboardButton(text="Уровень 2", callback_data="recipients_level_2"))
-    kb.row(InlineKeyboardButton(text="Уровень 3", callback_data="recipients_level_3"))
-    kb.row(InlineKeyboardButton(text="Уровень 4", callback_data="recipients_level_4"))
-    kb.row(InlineKeyboardButton(text="Уровень 5", callback_data="recipients_level_5"))
+    kb.add(InlineKeyboardButton(text="Все пользователи", callback_data="recipients_all"))
+    kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Уровень 1", callback_data="recipients_level_1"))
+    kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Уровень 2", callback_data="recipients_level_2"))
+    kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Уровень 3", callback_data="recipients_level_3"))
+    kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Уровень 4", callback_data="recipients_level_4"))
+    kb.adjust(1)
+    kb.add(InlineKeyboardButton(text="Уровень 5", callback_data="recipients_level_5"))
+    kb.adjust(1)
     
     await message.answer(
         "👥 Выберите получателей рассылки:",
@@ -806,19 +812,19 @@ async def check_level_requirements(user_id: int):
 async def get_full_statistics(message: Message):
     stats = get_statistics()
     stats_text = f"""
-📊 *Statistiques globales du bot:*
+📊 *Общая статистика бота:*
 
-👥 Total utilisateurs: {stats['total_users']}
-🆕 Nouveaux aujourd'hui: {stats['new_today']}
-📈 Par niveau:
-• Niveau 1: {stats['level_1']}
-• Niveau 2: {stats['level_2']}
-• Niveau 3: {stats['level_3']}
-• Niveau 4: {stats['level_4']}
-• Niveau 5: {stats['level_5']}
+👥 Всего пользователей: {stats['total_users']}
+🆕 Новых сегодня: {stats['new_today']}
+📈 По уровням:
+• Уровень 1: {stats['level_1']}
+• Уровень 2: {stats['level_2']}
+• Уровень 3: {stats['level_3']}
+• Уровень 4: {stats['level_4']}
+• Уровень 5: {stats['level_5']}
 
-🤝 Sans parrainages: {stats['no_referrals']}
-💰 Solde total: {stats['total_balance']}₣
+🤝 Без рефералов: {stats['no_referrals']}
+💰 Общий баланс: {stats['total_balance']}₣
     """
     await message.answer(stats_text, parse_mode=ParseMode.MARKDOWN)
 
@@ -828,11 +834,11 @@ async def get_level_statistics(message: Message):
     level = int(message.text.split()[1]) if len(message.text.split()) > 1 else 1
     stats = get_level_stats(level)
     stats_text = f"""
-📊 *Statistiques niveau {level}:*
+📊 *Статистика уровня {level}:*
 
-👥 Utilisateurs au niveau: {stats['users_count']}
-💰 Solde moyen: {stats['avg_balance']}₣
-👨‍👦‍👦 Nombre moyen de parrainages: {stats['avg_referrals']}
+👥 Пользователей на уровне: {stats['users_count']}
+💰 Средний баланс: {stats['avg_balance']}₣
+👨‍👦‍👦 Среднее количество рефералов: {stats['avg_referrals']}
     """
     await message.answer(stats_text, parse_mode=ParseMode.MARKDOWN)
 
