@@ -40,14 +40,18 @@ $tasks = $tasks_result->fetch_assoc();
       <h1 class="wallet_tittle">RETRAIT DES FONDS</h1>
       <p class="wallet_info">
         <?php
-        if ($tasks['zadanie_1'] != '1' || $tasks['zadanie_2'] != '1') {
-          echo 'Pour retirer, vous devez compléter <span>2 tâches</span> avec abonnement';
+        if ($tasks['zadanie_1'] != '1') {
+          echo 'Pour atteindre le niveau 2, complétez 1 tâche avec abonnement';
         } else if ($tasks['zadanie_3'] == '0') {
-          echo 'Pour retirer, vous devez vous inscrire sur le site';
-        } else if ($tasks['zadanie_4'] == '0') {
-          echo 'Pour retirer, vous devez faire votre premier dépôt';
-        } else if ($tasks['zadanie_5'] == '0') {
-          echo 'Pour retirer, vous devez inviter 1 ami';
+          echo 'Pour atteindre le niveau 3, inscrivez-vous sur le site';
+        } else if ($tasks['invited_friends'] < 5 || $tasks['friends_level_2'] < 5) {
+          echo 'Pour atteindre le niveau 3, invitez 5 amis de niveau 2 de farming';
+        } else if ($tasks['invited_friends'] < 15) {
+          echo 'Pour atteindre le niveau 4, invitez 15 amis';
+        } else if ($tasks['friends_level_3'] < 3) {
+          echo 'Pour atteindre le niveau 5, invitez 3 amis de niveau 3 de farming';
+        } else if ($tasks['current_level'] < 5) {
+          echo 'Le retrait des fonds n\'est disponible qu\'à partir du niveau 5';
         }
         ?>
       </p>
