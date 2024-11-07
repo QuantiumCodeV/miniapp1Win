@@ -108,7 +108,12 @@ async def success_register_1win(user_id):
         cursor.execute('SELECT referrer_id FROM users WHERE user_id = %s', (user_id,))
         referrer_id = cursor.fetchone()[0]
         if referrer_id:
-            cursor.execute('UPDATE users SET friends_level_2 = friends_level_2 + 1 WHERE user_id = %s', (referrer_id,))
+            cursor.execute('SELECT friends_level_2 FROM users WHERE user_id = %s', (referrer_id,))
+            current_level_2 = cursor.fetchone()[0]
+            if current_level_2 == 0:
+                cursor.execute('UPDATE users SET friends_level_2 = friends_level_2 + 1, zadanie_5 = TRUE WHERE user_id = %s', (referrer_id,))
+            else:
+                cursor.execute('UPDATE users SET friends_level_2 = friends_level_2 + 1 WHERE user_id = %s', (referrer_id,))
     except Exception as e:
         await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
         print(e)
