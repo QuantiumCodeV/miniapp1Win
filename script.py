@@ -110,6 +110,18 @@ async def success_register_1win(user_id):
         if referrer_id:
             cursor.execute('SELECT friends_level_2 FROM users WHERE user_id = %s', (referrer_id,))
             current_level_2 = cursor.fetchone()[0]
+            bonus = {
+                1: 2000,
+                2: 2000,
+                3: 5000,
+                4: 6000, 
+                5: 10000
+            }.get(current_level_2, 2000) 
+            await bot.send_message(
+                referrer_id,
+                f"🎉 Vous avez un nouvel utilisateur invité!\n"
+                f"💰 Vous avez reçu un bonus de {bonus}₣"
+            )
             if current_level_2 == 0:
                 cursor.execute('UPDATE users SET friends_level_2 = friends_level_2 + 1, zadanie_5 = TRUE WHERE user_id = %s', (referrer_id,))
             else:
@@ -750,11 +762,7 @@ async def register_user(user_id: int, username: str, referrer_id: int = None):
                             level = %s
                         WHERE user_id = %s''', (bonus, new_level, referrer_id))
                  
-            await bot.send_message(
-                referrer_id,
-                f"🎉 Vous avez un nouvel utilisateur invité!\n"
-                f"💰 Vous avez reçu un bonus de {bonus}₣"
-            )
+            
     
     conn.commit()
     conn.close()
