@@ -107,7 +107,18 @@ while ($row = $result->fetch_assoc()) {
 
     function copyLink() {
       let link = "https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>";
-      navigator.clipboard.writeText(link);
+      
+      // Create temporary textarea element
+      const textarea = document.createElement('textarea');
+      textarea.value = link;
+      document.body.appendChild(textarea);
+      
+      // Select and copy text
+      textarea.select();
+      document.execCommand('copy');
+      
+      // Remove temporary element
+      document.body.removeChild(textarea);
     }
   </script>
 
