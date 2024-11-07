@@ -8,7 +8,10 @@ require_once "backend/config.php";
 $user_id = $_GET['user_id'];
 
 // Obtenir les amis de la base de données
-$result = $mysql->query("SELECT * FROM users WHERE referrer_id = '$user_id'");
+$result = $mysql->prepare("SELECT * FROM users WHERE referrer_id = ? AND level >= 2");
+$result->bind_param("s", $user_id);
+$result->execute();
+$result = $result->get_result();
 $friends = array();
 $level2 = 0;
 $level3 = 0; 
