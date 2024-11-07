@@ -12,6 +12,7 @@ while ($row = $result->fetch_assoc()) {
         'level' => $row['level'],
         'balance' => $row['balance'],
         'invited_users' => $row['invited_users'],
+        'friends_level_2' => $row['friends_level_2'],
         'join_date' => $row['join_date'],
         'zadanie_1' => $row['zadanie_1'],
         'zadanie_2' => $row['zadanie_2'], 

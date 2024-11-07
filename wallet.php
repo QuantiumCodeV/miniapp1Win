@@ -41,17 +41,19 @@ $tasks = $tasks_result->fetch_assoc();
       <p class="wallet_info">
         <?php
         if ($tasks['zadanie_1'] != '1') {
-          echo 'Pour atteindre le niveau 2, complétez 1 tâche avec abonnement';
+            echo 'Pour atteindre le niveau 1, vous devez accomplir 1 tâche avec abonnement';
         } else if ($tasks['zadanie_3'] == '0') {
-          echo 'Pour atteindre le niveau 3, inscrivez-vous sur le site';
-        } else if ($tasks['invited_friends'] < 5 || $tasks['friends_level_2'] < 5) {
-          echo 'Pour atteindre le niveau 3, invitez 5 amis de niveau 2 de farming';
-        } else if ($tasks['invited_friends'] < 15) {
-          echo 'Pour atteindre le niveau 4, invitez 15 amis';
-        } else if ($tasks['friends_level_3'] < 3) {
-          echo 'Pour atteindre le niveau 5, invitez 3 amis de niveau 3 de farming';
+            echo 'Pour atteindre le niveau 2, vous devez accomplir la tâche d\'inscription';
+        } else if ($tasks['friends_level_2'] < 5) {
+            echo 'Pour atteindre le niveau 3, vous devez inviter encore 5 amis dans le bot';
+        } else if ($tasks['friends_level_2'] < 15) {
+            echo 'Pour atteindre le niveau 4, vous devez inviter encore 10 amis dans le bot';
+        } else if ($tasks['friends_level_2'] < 20) {
+            echo 'Pour atteindre le niveau 5, vous devez avoir 20 amis et 3 niveaux de farming';
         } else if ($tasks['current_level'] < 5) {
-          echo 'Le retrait des fonds n\'est disponible qu\'à partir du niveau 5';
+            echo 'Le retrait des fonds n\'est disponible qu\'à partir du niveau 5';
+        } else if ($tasks['balance'] < 20000) {
+            echo 'Le retrait des fonds est disponible à partir de 20000₣';
         }
         ?>
       </p>

@@ -53,6 +53,7 @@ def init_db():
                   balance INT DEFAULT 0,
                   invited_users INT DEFAULT 0,
                   referrer_id BIGINT,
+                  friends_level_2 INT DEFAULT 0,
                   join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                   zadanie_1 BOOLEAN DEFAULT FALSE,
                   zadanie_2 BOOLEAN DEFAULT FALSE,
@@ -104,6 +105,10 @@ async def success_register_1win(user_id):
         balance = cursor.fetchone()[0]
         await bot.send_message(user_id, f"✅ Vous vous êtes inscrit avec succès, vous avez reçu 1000₣, votre solde : {balance}₣")
         await bot.send_message(ADMIN_ID, f"✅ Пользователь {user_id} успешно зарегистрировался в 1win и повысил свой уровень!")
+        cursor.execute('SELECT referrer_id FROM users WHERE user_id = %s', (user_id,))
+        referrer_id = cursor.fetchone()[0]
+        if referrer_id:
+            cursor.execute('UPDATE users SET friends_level_2 = friends_level_2 + 1 WHERE user_id = %s', (referrer_id,))
     except Exception as e:
         await bot.send_message(ADMIN_ID, f"❌ Ошибка при обновлении статуса пользователя {user_id} в 1win!")
         print(e)
