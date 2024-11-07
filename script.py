@@ -786,7 +786,8 @@ def get_user_data(user_id: int) -> Dict:
         'level': user[2],
         'balance': user[3],
         'invited_users': user[4],
-        'referrer_id': user[5]
+        'referrer_id': user[5],
+        'friends_level_2': user[6]
     }
 
 # Fonction pour vérifier le niveau
