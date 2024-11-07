@@ -6,6 +6,8 @@ ini_set('display_errors', 1);
 require_once "backend/config.php";
 // Si user_id n'est pas encore enregistré dans les cookies
 $user_id = $_GET['user_id'];
+$user = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'")->fetch_assoc();
+
 ?>
 <!DOCTYPE html>
 <html lang="fr" class="">
@@ -86,7 +88,7 @@ $user_id = $_GET['user_id'];
       <div class="modal_gift_rect_content">
         <p class="modal_help_rect_tittle">Ce bot est créé pour vous aider à gagner de l'argent en invitant vos amis. Les gains dans le système sont basés sur un modèle simple et compréhensible : plus vous invitez de personnes, plus vous pouvez gagner.
         </p>
-        <p class="modal_help_rect_subtittle"><span>1</span> ami invité = <span>N montant</span> (dépend du niveau de l'utilisateur)</p>
+        <p class="modal_help_rect_subtittle"><span>1</span> ami invité = <span><?php if($user['level'] == 1) echo "1000₣"; else if($user['level'] == 2) echo "2000₣"; else if($user['level'] == 3) echo "5000₣"; else if($user['level'] == 4) echo "6000₣"; else if($user['level'] == 5) echo "10000₣"; ?>₣</span> (dépend du niveau de l'utilisateur)</p>
         <ul class="modal_help_rect_items">
           <li class="modal_help_rect_item_text"><span>1</span> niveau - niveau de base donné dès le début</li>
           <li class="modal_help_rect_item_text"><span>2</span> niveau pour <span>1</span> ami donne <span>2000₣</span></li>
