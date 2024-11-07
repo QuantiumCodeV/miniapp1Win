@@ -699,7 +699,7 @@ async def start_command(message: Message):
 📊 Vos statistiques:
 Niveau: {user_data['level']}
 Solde: {user_data['balance']}₣
-Amis invités: {user_data['invited_users']}
+Amis invités: {user_data['friends_level_2']}
     """
     
     await message.answer(
