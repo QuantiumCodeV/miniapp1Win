@@ -162,7 +162,19 @@ $user_id = $_GET['user_id'];
 
     function copyLink() {
       let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
-      navigator.clipboard.writeText(link);
+      try {
+        // Создаем временный элемент input
+        const tempInput = document.createElement('input');
+        tempInput.value = link;
+        document.body.appendChild(tempInput);
+        // Выделяем и копируем текст
+        tempInput.select();
+        document.execCommand('copy');
+        // Удаляем временный элемент
+        document.body.removeChild(tempInput);
+      } catch(err) {
+        console.error('Ошибка при копировании:', err);
+      }
     }
   </script>
 
