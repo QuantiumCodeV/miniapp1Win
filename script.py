@@ -714,8 +714,9 @@ Solde: {user_data['balance']}₣
 Amis invités: {user_data['friends_level_2']}
     """
     
-    await message.answer(
-        welcome_text,
+    await message.answer_video(
+        video="gif.mov",
+        caption=welcome_text,
         reply_markup=kb.as_markup(),
         parse_mode=ParseMode.MARKDOWN
     )
