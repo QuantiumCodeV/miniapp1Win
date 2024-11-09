@@ -161,6 +161,13 @@ $user = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'")->fetch_a
     console.log('Nom utilisateur:', user.first_name);
     console.log('Nom d\'utilisateur:', user.username);
     localStorage.setItem('user_id', user.id);
+    // Проверяем наличие user_id в URL
+    let urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has('user_id')) {
+        // Если user_id отсутствует, добавляем его из данных пользователя Telegram
+        let newUrl = window.location.pathname + '?user_id=' + user.id;
+        window.history.replaceState({}, '', newUrl);
+    }
 
     function copyLink() {
       let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
