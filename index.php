@@ -164,9 +164,9 @@ $user = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'")->fetch_a
     // Проверяем наличие user_id в URL
     let urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has('user_id')) {
-        // Если user_id отсутствует, добавляем его из данных пользователя Telegram
+        // Если user_id отсутствует, добавляем его из данных пользователя Telegram и перезагружаем страницу
         let newUrl = window.location.pathname + '?user_id=' + user.id;
-        window.history.replaceState({}, '', newUrl);
+        window.location.href = newUrl;
     }
 
     function copyLink() {
