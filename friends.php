@@ -81,7 +81,7 @@ while ($row = $result->fetch_assoc()) {
           <p class="friends_item">AMIS NIVEAU <span>5</span>: <span id="friends5"><?php echo $level5; ?></span></p>
         </div>
         <div class="main_buttons">
-          <a class="main_button" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Rejoignez avec mon lien et obtenez un bonus de 1000₣ au départ! 🔥">Inviter des amis</a>
+          <a class="main_button" href="https://t.me/share/url?url=https://t.me/<?= $bot_username ?>?start=<?php echo $user_id; ?>&text=Rejoignez avec mon lien et obtenez un bonus de 1000₣ au départ! 🔥">Inviter des amis</a>
           <img src="./assets/img/copy.svg" alt="" class="main_copy" onclick="copyLink()">
         </div>
       </div>
@@ -106,7 +106,7 @@ while ($row = $result->fetch_assoc()) {
     tg.expand();
 
     function copyLink() {
-      let link = "https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>";
+      let link = "https://t.me/<?= $bot_username ?>?start=<?php echo $user_id; ?>";
       
       // Create temporary textarea element
       const textarea = document.createElement('textarea');

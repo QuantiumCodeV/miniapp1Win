@@ -57,7 +57,7 @@ $user = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'")->fetch_a
         </ul>
         <p class="modal_gift_video_text">Pour recevoir votre récompense, envoyez le lien de votre compte et une capture d'écran montrant le nombre de vues de votre vidéo"
         </p>
-        <a class="modal_gift_button" href="https://t.me/support_bot">Support</a>
+        <a class="modal_gift_button" href="<?= $support_link ?>">Support</a>
         <style>
           .modal_gift_button {
             color: #fff;
@@ -129,7 +129,7 @@ $user = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'")->fetch_a
         ?>
         <h3 class="main_sutittle">Invitez des amis et recevez 1000₣ pour chaque ami</h3>
         <div class="main_buttons">
-          <a class="main_button" id="inviteBtn" href="https://t.me/share/url?url=https://t.me/fasdfadf_bot?start=<?php echo $user_id; ?>&text=Rejoignez avec mon lien et obtenez un bonus de démarrage de 1000₣! 🔥">Inviter des amis</a>
+          <a class="main_button" id="inviteBtn" href="https://t.me/share/url?url=https://t.me/<?= $bot_username ?>?start=<?php echo $user_id; ?>&text=Rejoignez avec mon lien et obtenez un bonus de démarrage de 1000₣! 🔥">Inviter des amis</a>
           <img src="./assets/img/copy.svg" alt="" class="main_copy" id="copyBtn" onclick="copyLink()">
         </div>
       </div>
@@ -170,7 +170,7 @@ $user = $mysql->query("SELECT * FROM users WHERE user_id = '$user_id'")->fetch_a
     }
 
     function copyLink() {
-      let link = "https://t.me/fasdfadf_bot?start=" + localStorage.getItem('user_id');
+      let link = "https://t.me/<?= $bot_username ?>?start=" + localStorage.getItem('user_id');
       try {
         // Создаем временный элемент input
         const tempInput = document.createElement('input');
