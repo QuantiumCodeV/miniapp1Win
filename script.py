@@ -678,7 +678,6 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
     """
     await callback.message.edit_text(stats)
     await state.clear()
-
 # Обработчик команды /start
 @router.message(Command("start"))
 async def start_command(message: Message):
@@ -714,8 +713,10 @@ Solde: {user_data['balance']}₣
 Amis invités: {user_data['friends_level_2']}
     """
     
+    # Используем FSInputFile для локального файла
+    video = FSInputFile("./gif.mov")
     await message.answer_video(
-        video="./gif.mov",
+        video=video,
         caption=welcome_text,
         reply_markup=kb.as_markup(),
         parse_mode=ParseMode.MARKDOWN
