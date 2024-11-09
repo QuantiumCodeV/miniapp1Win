@@ -719,7 +719,9 @@ Amis invités: {user_data['friends_level_2']}
         video=video,
         caption=welcome_text,
         reply_markup=kb.as_markup(),
-        parse_mode=ParseMode.MARKDOWN
+        parse_mode=ParseMode.MARKDOWN,
+        width=1920,  # Указываем оригинальную ширину видео
+        height=1080  # Указываем оригинальную высоту видео
     )
 
 async def register_user(user_id: int, username: str, referrer_id: int = None):
