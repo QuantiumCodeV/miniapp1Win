@@ -13,7 +13,7 @@ import json
 
 # Database configuration
 DB_HOST = "localhost"
-DB_USER = "miniapp"
+DB_USER = "admin"
 DB_PASSWORD = "72Merasardtfy_"
 DB_NAME = "miniapp"
 
