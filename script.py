@@ -13,7 +13,7 @@ import json
 
 # Database configuration
 DB_HOST = "localhost"
-DB_USER = "admin"
+DB_USER = "miniapp"
 DB_PASSWORD = "72Merasardtfy_"
 DB_NAME = "miniapp"
 
@@ -732,10 +732,10 @@ Amis invités: {user_data['friends_level_2']}
 
 async def register_user(user_id: int, username: str, referrer_id: int = None):
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
@@ -780,10 +780,10 @@ async def register_user(user_id: int, username: str, referrer_id: int = None):
 # Fonction pour obtenir les données utilisateur
 def get_user_data(user_id: int) -> Dict:
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     c.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
@@ -803,10 +803,10 @@ def get_user_data(user_id: int) -> Dict:
 # Fonction pour vérifier le niveau
 async def check_level_requirements(user_id: int):
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
@@ -888,10 +888,10 @@ async def get_level_statistics(message: Message):
 # Fonction pour obtenir les statistiques
 def get_statistics() -> Dict:
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
@@ -934,10 +934,10 @@ def get_statistics() -> Dict:
 
 def get_level_stats(level: int) -> Dict:
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
