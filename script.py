@@ -17,7 +17,7 @@ DB_USER = "admin"
 DB_PASSWORD = "72Merasardtfy_"
 DB_NAME = "miniapp"
 
-DOMAIN = "https://miniapp.quantiumcode.online"
+DOMAIN = "https://bots-neo.site"
 
 # Состояния для FSM
 class BroadcastStates(StatesGroup):
