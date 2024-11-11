@@ -11,6 +11,12 @@ from datetime import datetime
 import mysql.connector
 import json
 
+# Database configuration
+DB_HOST = "localhost"
+DB_USER = "miniapp"
+DB_PASSWORD = "72Merasardtfy_"
+DB_NAME = "miniapp"
+
 # Состояния для FSM
 class BroadcastStates(StatesGroup):
     choosing_recipients = State()
@@ -39,10 +45,10 @@ WIN_LINK = "https://1wwwl.com/?open=register&sub1="
 # Создание базы данных
 def init_db():
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     cursor = conn.cursor()
     
@@ -91,10 +97,10 @@ def init_db():
 
 async def success_register_1win(user_id):
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_", 
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
 
     cursor = conn.cursor()
@@ -134,10 +140,10 @@ async def success_register_1win(user_id):
 
 async def success_first_deposit_1win(user_id, amount):
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_", 
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
 
     cursor = conn.cursor()
@@ -156,10 +162,10 @@ async def success_first_deposit_1win(user_id, amount):
 @router.channel_post()
 async def channel_post(message: Message):
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_", 
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     cursor = conn.cursor()
     
@@ -204,10 +210,10 @@ async def list_promos(message: Message):
         return
         
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     c.execute('SELECT code FROM promo_codes')
@@ -229,10 +235,10 @@ async def show_promo_info(callback: CallbackQuery):
     code = callback.data.split("_")[2]
     
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     c.execute('''SELECT code, amount, max_uses, current_uses, created_at 
@@ -278,10 +284,10 @@ async def delete_promo(callback: CallbackQuery):
     code = callback.data.split("_")[2]
     
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
@@ -301,10 +307,10 @@ async def delete_promo(callback: CallbackQuery):
     
     # Получаем обновленный список промокодов
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     c.execute('SELECT code FROM promo_codes')
@@ -324,10 +330,10 @@ async def delete_promo(callback: CallbackQuery):
 @router.callback_query(lambda c: c.data == "back_to_promos")
 async def back_to_promos(callback: CallbackQuery):
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     c.execute('SELECT code FROM promo_codes')
@@ -381,10 +387,10 @@ async def process_promo_uses(message: Message, state: FSMContext):
     max_uses = int(message.text)
     
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     try:
@@ -414,10 +420,10 @@ async def activate_promo(message: Message):
     user_id = message.from_user.id
     
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
@@ -619,10 +625,10 @@ async def process_confirmation(callback: CallbackQuery, state: FSMContext):
 
     # Получаем пользователей по выбранным критериям
     conn = mysql.connector.connect(
-        host="localhost",
-        user="miniapp",
-        password="72Merasardtfy_",
-        database="miniapp"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     c = conn.cursor()
     
