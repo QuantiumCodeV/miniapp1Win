@@ -32,7 +32,7 @@ class PromoStates(StatesGroup):
     confirming = State()
 
 # Инициализация бота и диспетчера
-bot = Bot(token="7666407425:AAF623qqMheTU-SD_zTbFqmy8w2i_WHGAFw")
+bot = Bot(token="8094002698:AAEmA01XnMzEwmn5rlhZVj8uWr6gKNxQlN4")
 dp = Dispatcher()
 router = Router()
 # Установка ID администратора
