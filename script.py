@@ -17,6 +17,8 @@ DB_USER = "admin"
 DB_PASSWORD = "72Merasardtfy_"
 DB_NAME = "miniapp"
 
+DOMAIN = "https://miniapp.quantiumcode.online"
+
 # Состояния для FSM
 class BroadcastStates(StatesGroup):
     choosing_recipients = State()
@@ -694,12 +696,9 @@ async def start_command(message: Message):
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(
         text="Ouvrir l'application",
-        web_app=WebAppInfo(url=f"https://miniapp.quantiumcode.online?user_id={message.from_user.id}")
+        web_app=WebAppInfo(url=f"{DOMAIN}/?user_id={message.from_user.id}")
     ))
 
-    # Создаем реферальную ссылку
-    ref_link = f"https://t.me/fasdfadf_bot?start={message.from_user.id}"
-    
     # Регистрируем пользователя
     await register_user(message.from_user.id, message.from_user.username, referrer_id)
 
